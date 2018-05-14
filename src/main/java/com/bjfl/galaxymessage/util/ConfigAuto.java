@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("config.properties")
+@PropertySource(value = "config.properties", encoding = "utf-8")
 public class ConfigAuto {
 
     @Value("${host}")
