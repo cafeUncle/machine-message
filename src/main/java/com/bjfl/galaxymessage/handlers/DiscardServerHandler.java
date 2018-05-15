@@ -30,8 +30,18 @@ public class DiscardServerHandler extends ChannelHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             ByteBuf buf = (ByteBuf) msg;
-            byte[] req = new byte[buf.readableBytes()];
-            System.out.println(MessageUtil.bytesToHexString(req));
+//            byte[] req = new byte[buf.readableBytes()];
+//            System.out.println(buf.toString(CharsetUtil.UTF_8));
+
+            byte[] byteArray = new byte[buf.readableBytes()];
+            buf.readBytes(byteArray);
+            System.out.println(Arrays.toString(byteArray));
+            int[] result = new int[byteArray.length];
+            for (int i = 0; i < byteArray.length; i++) {
+                result[i] = byteArray[i] & 0xff;
+            }
+            System.out.println(Arrays.toString(result));
+            System.out.println(MessageUtil.intsToHexString2(result));
         } finally {
             /**
              * ByteBuf是一个引用计数对象，这个对象必须显示地调用release()方法来释放。
@@ -52,18 +62,6 @@ public class DiscardServerHandler extends ChannelHandlerAdapter {
         // 出现异常就关闭
         cause.printStackTrace();
         ctx.close();
-    }
-
-    public static void main(String[] args) {
-//        byte code = -114;
-//        byte code = 123;
-//        if (code > 0) {
-//            System.out.println(code == 0x7b);
-//        }else {
-//            System.out.println(code + 256 == 0x8e);
-//        }
-
-        System.out.println(Integer.parseInt("-114", 16));
     }
 
 }
