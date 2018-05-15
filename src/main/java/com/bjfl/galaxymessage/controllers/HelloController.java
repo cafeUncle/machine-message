@@ -17,12 +17,25 @@ public class HelloController {
     @Autowired
     NettyConfig nettyConfig;
 
-    @RequestMapping("/hello")
+    @RequestMapping("/")
     public String hello() {
         System.out.println(configAuto.host);
+        System.out.println("new");
+        System.out.println("new2");
+        System.out.println("new3");
+        System.out.println("new4");
+        System.out.println("new5");
         return "Hello World";
     }
 
+    /**
+     * 类似于centos下载的文件服务器
+     * @param machineId
+     * @param startDatetime
+     * @param endDatetime
+     * @param index
+     * @return
+     */
     @RequestMapping("/logs")
     public String logs(String machineId, Date startDatetime, Date endDatetime, Integer index) {
         System.out.println(configAuto.host);

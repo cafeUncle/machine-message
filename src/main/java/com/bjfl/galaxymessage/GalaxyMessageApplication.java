@@ -14,14 +14,14 @@ public class GalaxyMessageApplication implements CommandLineRunner {
         SpringApplication.run(GalaxyMessageApplication.class, args);
 
         try {
-            new DiscardServer(8080).run();
+            new DiscardServer(9280).run();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        System.out.println("runner");
+    public void run(String... args) {
+        System.out.println("CommandLineRunner running");
     }
 }
