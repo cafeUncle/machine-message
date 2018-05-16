@@ -1,6 +1,6 @@
 package com.bjfl.galaxymessage.servers;
 
-import com.bjfl.galaxymessage.handlers.DiscardServerHandler;
+import com.bjfl.galaxymessage.handlers.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -59,7 +59,7 @@ public class DiscardServer {
             bootstrap = bootstrap.childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new DiscardServerHandler());// demo1.discard
+                    ch.pipeline().addLast(new ServerHandler());// demo1.discard
                     // ch.pipeline().addLast(new
                     // ResponseServerHandler());//demo2.echo
                     // ch.pipeline().addLast(new
