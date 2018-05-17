@@ -10,6 +10,10 @@ spring:
       charset: UTF-8
   profiles:
     active: test
+  banner:
+    charset: UTF-8
 admin:
   username: guest
   password: guest
+logging:
+  file: classpath:log4j2.properties

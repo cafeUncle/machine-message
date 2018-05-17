@@ -1,4 +1,4 @@
-package com.bjfl.galaxymessage.controllers;
+package com.bjfl.galaxymessage.mqtt;
 
 import com.bjfl.galaxymessage.messages.*;
 import com.bjfl.galaxymessage.netty.NettyMessageHandler;
