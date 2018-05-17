@@ -1,32 +1,29 @@
-package com.bjfl.galaxymessage.handlers;
+package com.bjfl.galaxymessage.netty;
 
-import com.bjfl.galaxymessage.message.Message;
-import com.bjfl.galaxymessage.message.MessageFactory;
+import com.bjfl.galaxymessage.messages.Message;
+import com.bjfl.galaxymessage.parser.MessageFactory;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 服务端处理通道.这里只是打印一下请求的内容，并不对请求进行任何的响应 ServerHandler 继承自
+ * 服务端处理通道.这里只是打印一下请求的内容，并不对请求进行任何的响应 NettyMessageHandler 继承自
  * ChannelHandlerAdapter， 这个类实现了ChannelHandler接口， ChannelHandler提供了许多事件处理的接口方法，
  * 然后你可以覆盖这些方法。 现在仅仅只需要继承ChannelHandlerAdapter类而不是你自己去实现接口方法。
  */
-public class ServerHandler extends ChannelHandlerAdapter {
+@Component
+@ChannelHandler.Sharable
+public class NettyMessageHandler extends ChannelHandlerAdapter {
 
     public static final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
@@ -36,7 +33,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
      * 这个例子中，收到的消息的类型是ByteBuf
      *
      * @param ctx 通道处理的上下文信息
-     * @param o 接收的消息
+     * @param o   接收的消息
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object o) {
@@ -48,16 +45,15 @@ public class ServerHandler extends ChannelHandlerAdapter {
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
             }
-            System.out.println(Arrays.toString(msgArr));
-            System.out.println(MessageUtil.intsToHexString(msgArr));
+//            System.out.println("rec int[]:" + Arrays.toString(msgArr));
+//            System.out.println("rec hex:" + MessageUtil.intsToHexString(msgArr));
 
             if (MessageUtil.validate(msgArr)) {
                 Message msg = MessageFactory.parse(msgArr);
-                System.out.println(msg);
                 if (msg != null) {
                     msg.deal(ctx);
                 }
-            }else {
+            } else {
                 System.out.println("校验失败");
             }
         } finally {
@@ -137,7 +133,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
         System.out.println("[" + ctx.channel().remoteAddress() + "] exception:" + cause.toString());
         if (clientList.containsValue(ctx)) {
             for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
-                if(ctx.equals(entry.getValue())){
+                if (ctx.equals(entry.getValue())) {
                     clientList.remove(entry.getKey());
                     break;
                 }
@@ -145,6 +141,31 @@ public class ServerHandler extends ChannelHandlerAdapter {
         }
         cause.printStackTrace();
         ctx.close();
+    }
+
+
+    public void channelWrite(ChannelHandlerContext channelHandlerContext, Message msg) {
+        ByteBuf heapBuffer = Unpooled.buffer(msg.getInts().length);
+        heapBuffer.writeBytes(MessageUtil.intArrToByteArr(msg.getInts()));
+
+        channelHandlerContext.channel().writeAndFlush(heapBuffer).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+//                    System.out.println("arrived");
+                } else {
+//                    System.out.println("fail");
+                }
+                if (future.isDone()) {
+//                    System.out.println("done");
+                } else {
+//                    System.out.println("lose");
+                }
+            }
+        });
+
+//        ReferenceCountUtil.release(heapBuffer);
+
     }
 
 }

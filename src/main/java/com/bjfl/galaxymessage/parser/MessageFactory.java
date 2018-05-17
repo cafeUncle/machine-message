@@ -1,6 +1,7 @@
-package com.bjfl.galaxymessage.message;
+package com.bjfl.galaxymessage.parser;
 
-import com.bjfl.galaxymessage.receiver.*;
+import com.bjfl.galaxymessage.messages.Message;
+import com.bjfl.galaxymessage.messages.*;
 
 public class MessageFactory {
 
@@ -25,11 +26,11 @@ public class MessageFactory {
             case CELL_STATUS:
                 return new CellStatusMessage(msg);
             case SHIPMENT:
-                return new Shipment(msg);
+                return new ShipmentMessage(msg);
             case SHIPMENT_RESULT:
                 return new ShipmentResultMessage(msg);
             case SHIPMENT_LOG:
-                return new ShipmentLog(msg);
+                return new ShipmentLogMessage(msg);
             default:
                 return null;
         }

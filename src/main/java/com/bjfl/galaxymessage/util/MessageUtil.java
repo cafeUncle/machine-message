@@ -1,6 +1,7 @@
 package com.bjfl.galaxymessage.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MessageUtil {
@@ -70,6 +71,14 @@ public class MessageUtil {
             // sb.append(' ');
         }
         return sb.toString().trim();
+    }
+
+    public static byte[] intArrToByteArr(int[] arr) {
+        byte[] bytes = new byte[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            bytes[i] = (byte) arr[i];
+        }
+        return bytes;
     }
 
 }

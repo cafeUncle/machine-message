@@ -1,4 +1,4 @@
-package com.bjfl.galaxymessage.message;
+package com.bjfl.galaxymessage.parser;
 
 public enum MessageType {
 

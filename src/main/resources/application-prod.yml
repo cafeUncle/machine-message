@@ -9,7 +9,4 @@ spring:
     encoding:
       charset: UTF-8
   profiles:
-    active: test
-admin:
-  username: guest
-  password: guest
+    active: prod

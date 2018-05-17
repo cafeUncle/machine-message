@@ -1,4 +1,4 @@
-package com.bjfl.galaxymessage.message;
+package com.bjfl.galaxymessage.messages;
 
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,8 +27,12 @@ public class Message implements Serializable {
         this.ints = ints;
     }
 
+    public String getMachineCode(int offset) {
+        return new String(this.ints, offset, 13);
+    }
+
     public void deal(ChannelHandlerContext ctx) {
-        System.out.println("deal:" + ctx.channel().remoteAddress());
+//        System.out.println("deal:" + ctx.channel().remoteAddress());
     }
 
     public void generate(String machineCode, int cabinetAddress, int command, List<Integer> data) {
