@@ -1,7 +1,9 @@
 package com.bjfl.galaxymessage.netty;
 
 import com.bjfl.galaxymessage.messages.Message;
+import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
 import com.bjfl.galaxymessage.parser.MessageFactory;
+import com.bjfl.galaxymessage.process.ShipmentProcess;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -10,6 +12,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -24,6 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @ChannelHandler.Sharable
 public class NettyMessageHandler extends ChannelHandlerAdapter {
+
+    @Autowired
+    ShipmentProcess shipmentProcess;
 
     public static final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
@@ -50,8 +56,13 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
 
             if (MessageUtil.validate(msgArr)) {
                 Message msg = MessageFactory.parse(msgArr);
+
                 if (msg != null) {
                     msg.deal(ctx);
+
+                    if (msg instanceof ShipmentResultMessage) {
+                        shipmentProcess.deal(msg);
+                    }
                 }
             } else {
                 System.out.println("校验失败");

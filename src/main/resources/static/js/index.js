@@ -20,7 +20,7 @@ $(function () {
         })
     })
     $('#shipment_log').click(() => {
-        $.getJSON('shipmentLog?orderCode=&cabinetAddress=1&times=1', null, (response) => {
+        $.getJSON('shipmentLog?machineCode=BJFL000000001&cabinetAddress=1&orderCode=&times=1', null, (response) => {
             console.log(response)
         })
     })

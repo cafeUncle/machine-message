@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"com.bjfl.galaxymessage.netty", "com.bjfl.galaxymessage.controllers", "com.bjfl.galaxymessage.util"})
+@ComponentScan({"com.bjfl.galaxymessage.netty", "com.bjfl.galaxymessage.controllers", "com.bjfl.galaxymessage.mqtt", "com.bjfl.galaxymessage.process", "com.bjfl.galaxymessage.util"})
 public class GalaxyMessageApplication implements CommandLineRunner {
 
     @Autowired
