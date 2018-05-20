@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="600">
+	<Properties>
+        <Property name="LOG_HOME">${ctx:logging.path}</Property>
+        <Property name="APP_NAME">${ctx:spring.application.name}</Property>
+        <Property name="LOG_LEVEL">${ctx:logging.level.root}</Property>
+		<Property name="PID">????</Property>
+		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+		<Property name="LOG_LEVEL_PATTERN">%5p</Property>
+		<Property name="LOG_CONSOLE_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%10t]}{faint} %clr{%c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+        <Property name="LOG_FILE_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN} ${sys:PID} --- [%t] %c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    </Properties>
+
+    <!--日志输出器-->
+	<Appenders>
+		<Console name="Console" direct="true">
+			<PatternLayout pattern="${LOG_CONSOLE_PATTERN}" />
+		</Console>
+
+		<RollingRandomAccessFile name="File" fileName="${LOG_HOME}/${APP_NAME}.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/${APP_NAME}-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout pattern="${LOG_FILE_PATTERN}" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+		</RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="Error-File" fileName="${LOG_HOME}/${APP_NAME}-error.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/${APP_NAME}-%d{yyyy-MM-dd-HH}-%i.log.gz">
+            <ThresholdFilter level="error"/>
+            <PatternLayout pattern="${LOG_FILE_PATTERN}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50 MB" />
+            </Policies>
+        </RollingRandomAccessFile>
+	</Appenders>
+
+    <!--日志记录器-->
+	<Loggers>
+        <!--<AsyncLogger name="org.springframework" level="info" />
+        <AsyncLogger name="springfox.documentation" level="info" />-->
+		<AsyncRoot level="${LOG_LEVEL}">
+			<AppenderRef ref="Console" />
+            <AppenderRef ref="File" />
+            <AppenderRef ref="Error-File" />
+		</AsyncRoot>
+	</Loggers>
+</Configuration>

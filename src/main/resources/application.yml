@@ -15,5 +15,12 @@ spring:
 admin:
   username: guest
   password: guest
+
+spring:
+  application:
+    name: log4j2
+
 logging:
-  file: classpath:log4j2.properties
+  path: ./logs
+  level:
+    root: info
