@@ -1,9 +1,12 @@
 package com.bjfl.galaxymessage.netty;
 
+import com.bjfl.galaxymessage.messages.CellStatusMessage;
 import com.bjfl.galaxymessage.messages.Message;
 import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
+import com.bjfl.galaxymessage.mqtt.MqttSender;
+import com.bjfl.galaxymessage.parser.CellStatusMessageParser;
 import com.bjfl.galaxymessage.parser.MessageFactory;
-import com.bjfl.galaxymessage.process.ShipmentProcess;
+import com.bjfl.galaxymessage.parser.MessageType;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,6 +15,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import javafx.scene.control.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NettyMessageHandler extends ChannelHandlerAdapter {
 
     @Autowired
-    ShipmentProcess shipmentProcess;
+    MqttSender mqttSender;
 
     public static final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
@@ -61,7 +65,20 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                     msg.deal(ctx);
 
                     if (msg instanceof ShipmentResultMessage) {
-                        shipmentProcess.deal(msg);
+                        //
+                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
+                    }else if (msg instanceof CellStatusMessage) {
+                        CellStatusMessage cellStatusMessage = (CellStatusMessage) msg;
+                        if (MessageType.CELL_STATUS.equals(cellStatusMessage.getNextCommand())) {
+                            mqttSender.sendCellStatus((CellStatusMessage)msg);
+                        }else {
+                            Message message = CellStatusMessageParser.parse(cellStatusMessage);
+                            if (message != null) {
+                                channelWrite(clientList.get(message.getMachineCode(6)), message);
+                            }else {
+                                System.out.println("货道查询指令携带信息解析异常, " + Arrays.toString(msgArr));
+                            }
+                        }
                     }
                 }
             } else {

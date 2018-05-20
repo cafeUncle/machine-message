@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @PropertySource(value = "classpath:config.properties", encoding = "utf-8")
-public class MachineServer {
+public class NettyServer {
 
     @Autowired
     NettyMessageHandler nettyMessageHandler;

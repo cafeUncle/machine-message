@@ -1,6 +1,6 @@
 package com.bjfl.galaxymessage;
 
-import com.bjfl.galaxymessage.netty.MachineServer;
+import com.bjfl.galaxymessage.netty.NettyServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -8,11 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"com.bjfl.galaxymessage.netty", "com.bjfl.galaxymessage.controllers", "com.bjfl.galaxymessage.mqtt", "com.bjfl.galaxymessage.process", "com.bjfl.galaxymessage.util"})
+@ComponentScan({"com.bjfl.galaxymessage.controllers", "com.bjfl.galaxymessage.netty", "com.bjfl.galaxymessage.mqtt", "com.bjfl.galaxymessage.util"})
 public class GalaxyMessageApplication implements CommandLineRunner {
 
     @Autowired
-    MachineServer machineServer;
+    NettyServer nettyServer;
 
     public static void main(String[] args) {
         SpringApplication.run(GalaxyMessageApplication.class, args);
@@ -29,7 +29,7 @@ public class GalaxyMessageApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            machineServer.run();
+            nettyServer.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
