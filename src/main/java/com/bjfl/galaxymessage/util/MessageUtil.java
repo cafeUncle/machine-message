@@ -81,4 +81,8 @@ public class MessageUtil {
         return bytes;
     }
 
+    public static boolean notExpired(long timestamp, long expireTime) {
+        return System.currentTimeMillis() <= timestamp + expireTime;
+    }
+
 }

@@ -8,17 +8,14 @@ spring:
   http:
     encoding:
       charset: UTF-8
-  profiles:
-    active: test
   banner:
     charset: UTF-8
+  application:
+    name: log4j2
+
 admin:
   username: guest
   password: guest
-
-spring:
-  application:
-    name: log4j2
 
 logging:
   path: ./logs

@@ -3,7 +3,7 @@ package com.bjfl.galaxymessage.netty;
 import com.bjfl.galaxymessage.messages.CellStatusMessage;
 import com.bjfl.galaxymessage.messages.Message;
 import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
-import com.bjfl.galaxymessage.mqtt.MqttSender;
+import com.bjfl.galaxymessage.mqtt.producer.MqttSender;
 import com.bjfl.galaxymessage.parser.CellStatusMessageParser;
 import com.bjfl.galaxymessage.parser.MessageFactory;
 import com.bjfl.galaxymessage.parser.MessageType;
@@ -15,7 +15,6 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import javafx.scene.control.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

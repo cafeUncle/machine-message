@@ -23,12 +23,9 @@ public class ShipmentResultMessage extends Message {
         String machineCode = getMachineCode(6);
 
         System.out.println("查询出货结果rec:" + machineCode
-//                + ", \n状态(0货道板串口没有返回数据或出货指令没有执行,长时间没有返回时需要向报错如网络异常1正在出货2出货完成3出货终止(发生复位，需获取当前日志)4出货终止(货道异常，需获取当前日志)5出货超时(发生超时，需获取当前日志):" + this.ints[this.ints.length-6]
-//                + ", 是否扣钱(0不扣钱1扣钱):" + this.ints[this.ints.length-5]
-//                + ", 当前出货处理结果(1未处理0处理完成):" + this.ints[this.ints.length-4]);
-                + ", 状态:" + parseStatus(this.ints[this.ints.length - 5])
-                + ", 是否扣钱:" + parsePay(this.ints[this.ints.length - 4])
-                + ", 当前出货处理结果:" + parseResult(this.ints[this.ints.length - 3])
+                + ", 状态:" + parseStatus(this.ints[this.ints.length - 6])
+                + ", 是否扣钱:" + parsePay(this.ints[this.ints.length - 5])
+                + ", 当前出货处理结果:" + parseResult(this.ints[this.ints.length - 4])
                 + ", 订单号:" + this.getOrderCode()
                 + ", 16进制数组:" + MessageUtil.intsToHexString(this.ints));
     }

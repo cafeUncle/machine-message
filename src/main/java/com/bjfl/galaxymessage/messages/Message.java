@@ -31,6 +31,11 @@ public class Message implements Serializable {
         return new String(this.ints, offset, 13);
     }
 
+    public String getTopic() {
+        List<Integer> list = MessageUtil.strTo16("testtopic");
+        return new String(this.ints, 3,13);
+    }
+
     public void deal(ChannelHandlerContext ctx) {
 //        System.out.println("deal:" + ctx.channel().remoteAddress());
     }
