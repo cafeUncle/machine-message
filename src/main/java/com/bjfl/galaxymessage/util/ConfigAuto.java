@@ -7,17 +7,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource(value = "classpath:config.properties", encoding = "utf-8")
-@ConfigurationProperties(prefix = "admin")
 public class ConfigAuto {
 
     @Value("${host}")
     public String host;
 
-    @Value("${username}")
+    @Value("${port}")
+    public int port;
+
+    @Value("${uname}")
     public String username;
 
     @Value("${password}")
     public String password;
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     public String getHost() {
         return host;
@@ -47,6 +57,7 @@ public class ConfigAuto {
     public String toString() {
         return "ConfigAuto{" +
                 "host='" + host + '\'' +
+                ", port=" + port +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

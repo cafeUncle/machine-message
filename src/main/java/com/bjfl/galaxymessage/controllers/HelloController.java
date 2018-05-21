@@ -14,8 +14,6 @@ import java.util.Date;
 @Controller
 public class HelloController {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     ConfigAuto configAuto;
     @Autowired
@@ -23,10 +21,6 @@ public class HelloController {
 
     @RequestMapping("/")
     public String hello() {
-        logger.info("Hello World");
-        logger.info(configAuto.username);
-        logger.info(configAuto.password);
-        logger.info(configAuto.toString());
         return "index.html";
     }
 
