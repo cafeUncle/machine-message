@@ -1,9 +1,6 @@
 package com.bjfl.galaxymessage.controllers;
 
-import com.bjfl.galaxymessage.util.ConfigAuto;
-import com.bjfl.galaxymessage.util.NettyConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.bjfl.galaxymessage.util.AdminConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +12,7 @@ import java.util.Date;
 public class HelloController {
 
     @Autowired
-    ConfigAuto configAuto;
-    @Autowired
-    NettyConfig nettyConfig;
+    AdminConfig adminConfig;
 
     @RequestMapping("/")
     public String hello() {
@@ -26,15 +21,12 @@ public class HelloController {
 
     /**
      * 类似于centos下载的文件服务器
-     *
-     * @param startDatetime
-     * @param endDatetime
      * @return
      */
     @RequestMapping("/logs")
     @ResponseBody
-    public String logs(Date startDatetime, Date endDatetime) {
-        return String.format("logs host:%s", configAuto.host);
+    public String logs() {
+        return String.format("logs host:%s", adminConfig.host);
     }
 
 }

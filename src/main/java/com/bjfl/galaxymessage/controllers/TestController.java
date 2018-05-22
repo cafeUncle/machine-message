@@ -163,12 +163,7 @@ public class TestController {
         try {
             List<Integer> data = new ArrayList<>();
             if (StringUtils.isEmpty(orderCode)) {
-                data.addAll(Arrays.asList(
-                                0x00,0x00,0x00,0x00,0x00,
-                                0x00,0x00,0x00,0x00,0x00,
-                                0x00,0x00,0x00,0x00,0x00,
-                                0x00,0x00,0x00,0x00,0x00,
-                                0x00,0x00,0x00,0x00,0x00));
+                data.addAll(MessageUtil.generateEmptyCode(25));
             }else {
                 data.addAll(MessageUtil.strTo16(orderCode));
             }

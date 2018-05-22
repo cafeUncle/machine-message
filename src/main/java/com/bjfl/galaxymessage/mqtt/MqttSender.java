@@ -1,6 +1,8 @@
-package com.bjfl.galaxymessage.mqtt.producer;
+package com.bjfl.galaxymessage.mqtt;
 
 import com.bjfl.galaxymessage.messages.CellStatusMessage;
+import com.bjfl.galaxymessage.messages.ResetMessage;
+import com.bjfl.galaxymessage.messages.ShipmentMessage;
 import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
 import com.bjfl.galaxymessage.mqtt.MqttConfiguration;
 import org.eclipse.paho.client.mqttv3.*;
@@ -21,7 +23,7 @@ public class MqttSender {
     public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
         // extract message machineCode orderCode
         shipmentResultMessage.getOrderCode();
-        shipmentResultMessage.getMachineCode(13);
+        shipmentResultMessage.getMachineCode();
         //
     }
 
@@ -34,5 +36,13 @@ public class MqttSender {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendShipment(ShipmentMessage msg) {
+
+    }
+
+    public void sendResetMessage(ResetMessage msg) {
+
     }
 }

@@ -3,6 +3,8 @@ package com.bjfl.galaxymessage.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MessageUtil {
 
@@ -86,6 +88,14 @@ public class MessageUtil {
 
     public static boolean notExpired(long timestamp, long expireTime) {
         return System.currentTimeMillis() <= timestamp + expireTime;
+    }
+
+    public static List<Integer> generateEmptyCode(int length) {
+        return IntStream.range(0, length).mapToObj(a -> 0x00).collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        System.out.println(generateEmptyCode(8).toString());
     }
 
 }

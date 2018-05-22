@@ -1,6 +1,6 @@
 package com.bjfl.galaxymessage;
 
-import com.bjfl.galaxymessage.util.ConfigAuto;
+import com.bjfl.galaxymessage.util.AdminConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +12,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class GalaxyMessageApplicationTests {
 
     @Autowired
-    ConfigAuto configAuto;
+    AdminConfig adminConfig;
 
     @Test
     public void contextLoads() {
-        System.out.println(configAuto.host);
+        System.out.println(adminConfig.host);
     }
 
 }

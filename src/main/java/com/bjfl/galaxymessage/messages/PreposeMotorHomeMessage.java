@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class PreposeMotorHomeMessage extends Message {
 
     public PreposeMotorHomeMessage() {
+        super();
     }
 
     public PreposeMotorHomeMessage(int[] ints) {
@@ -17,7 +18,7 @@ public class PreposeMotorHomeMessage extends Message {
     public void deal(ChannelHandlerContext ctx) {
         super.deal(ctx);
 
-        String machineCode = getMachineCode(6);
+        String machineCode = getMachineCode();
 
         System.out.println("查询货道状态rec:" + machineCode +
                 ", 能否出货(0能1不能):" + this.ints[26] +

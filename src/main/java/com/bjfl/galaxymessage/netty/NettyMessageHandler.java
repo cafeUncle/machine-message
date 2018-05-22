@@ -1,13 +1,12 @@
 package com.bjfl.galaxymessage.netty;
 
-import com.bjfl.galaxymessage.messages.CellStatusMessage;
-import com.bjfl.galaxymessage.messages.Message;
-import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
-import com.bjfl.galaxymessage.mqtt.producer.MqttSender;
+import com.bjfl.galaxymessage.messages.*;
+import com.bjfl.galaxymessage.mqtt.MqttSender;
 import com.bjfl.galaxymessage.parser.CellStatusMessageParser;
 import com.bjfl.galaxymessage.parser.MessageFactory;
 import com.bjfl.galaxymessage.parser.MessageType;
 import com.bjfl.galaxymessage.util.MessageUtil;
+import com.bjfl.galaxymessage.websocket.MyWebSocket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -33,14 +32,12 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
 
     @Autowired
     MqttSender mqttSender;
+    @Autowired
+    MyWebSocket myWebSocket;
 
-    public static final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
 
     /**
-     * 这里我们覆盖了chanelRead()事件处理方法。 每当从客户端收到新的数据时， 这个方法会在收到消息时被调用，
-     * 这个例子中，收到的消息的类型是ByteBuf
-     *
      * @param ctx 通道处理的上下文信息
      * @param o   接收的消息
      */
@@ -54,86 +51,51 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
             }
+
             if (MessageUtil.validate(msgArr)) {
                 Message msg = MessageFactory.parse(msgArr);
 
                 if (msg != null) {
                     msg.deal(ctx);
 
-                    if (msg instanceof ShipmentResultMessage) {
-                        //
-                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
-                    }else if (msg instanceof CellStatusMessage) {
+                    MyWebSocket.sendMessageToAll(Arrays.toString(msg.getInts())); // todo: 测试阶段放开
+
+                    if (msg instanceof CellStatusMessage) {
+
                         CellStatusMessage cellStatusMessage = (CellStatusMessage) msg;
+
                         if (MessageType.CELL_STATUS.equals(cellStatusMessage.getNextCommand())) {
                             mqttSender.sendCellStatus((CellStatusMessage)msg);
+
                         }else {
                             Message message = CellStatusMessageParser.parse(cellStatusMessage);
                             if (message != null) {
-                                channelWrite(clientList.get(message.getMachineCode(6)), message);
+                                channelWrite(clientList.get(message.getMachineCode()), message);
                             }else {
 //                                System.out.println("货道查询指令携带信息解析异常, " + Arrays.toString(msgArr));
                             }
                         }
+                    }else if (msg instanceof ShipmentMessage) {
+                        mqttSender.sendShipment((ShipmentMessage)msg);
+
+                    }else if (msg instanceof ShipmentResultMessage) {
+                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
+
+                    }else if (msg instanceof ShipmentLogMessage) {
+                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
+
+                    }else if (msg instanceof ResetMessage) {
+                        mqttSender.sendResetMessage((ResetMessage) msg);
                     }
                 }
             } else {
-                System.out.println("校验失败");
+                System.out.println("校验失败:" + MessageUtil.intsToHexString(msgArr));
             }
         } finally {
-            /**
-             * ByteBuf是一个引用计数对象，这个对象必须显示地调用release()方法来释放。
-             * 请记住处理器的职责是释放所有传递到处理器的引用计数对象。
-             */
-            // 抛弃收到的数据
             ReferenceCountUtil.release(o);
         }
     }
 
-    /**
-     * 处理新加的消息通道
-     *
-     * @param ctx
-     * @throws Exception
-     */
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        for (Channel ch : group) {
-            if (ch == channel) {
-//                ch.writeAndFlush("[" + channel.remoteAddress() + "] coming");
-                System.out.println("[" + channel.remoteAddress() + "] coming");
-            }
-        }
-        group.add(channel);
-        System.out.println("新增消息通道");
-    }
-
-    /**
-     * 处理退出消息通道
-     *
-     * @param ctx
-     * @throws Exception
-     */
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        for (Channel ch : group) {
-            if (ch == channel) {
-//                ch.writeAndFlush("[" + channel.remoteAddress() + "] leaving");
-                System.out.println("[" + channel.remoteAddress() + "] leaving");
-            }
-        }
-        System.out.println("退出消息通道");
-        group.remove(channel);
-    }
-
-    /**
-     * 在建立连接时发送消息
-     *
-     * @param ctx
-     * @throws Exception
-     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
@@ -143,7 +105,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
         } else {
             System.out.println("[" + channel.remoteAddress() + "] is offline");
         }
-//        ctx.writeAndFlush("[server]: welcome");
     }
 
     @Override
@@ -153,43 +114,34 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
          * 错误或者处理器在处理事件时抛出的异常时。在大部分情况下，捕获的异常应该被记录下来 并且把关联的 channel
          * 给关闭掉。然而这个方法的处理方式会在遇到不同异常的情况下有不同的实现，比如你可能想在关闭连接之前发送一个错误码的响应消息。
          */
-        // 出现异常就关闭
-        System.out.println("[" + ctx.channel().remoteAddress() + "] exception:" + cause.toString());
         if (clientList.containsValue(ctx)) {
             for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
                 if (ctx.equals(entry.getValue())) {
                     clientList.remove(entry.getKey());
+                    System.out.println("[" + entry.getKey() + "] exception:" + cause.toString());
                     break;
                 }
             }
         }
-        cause.printStackTrace();
         ctx.close();
     }
-
 
     public void channelWrite(ChannelHandlerContext channelHandlerContext, Message msg) {
         ByteBuf heapBuffer = Unpooled.buffer(msg.getInts().length);
         heapBuffer.writeBytes(MessageUtil.intArrToByteArr(msg.getInts()));
-        System.out.println(Arrays.toString(msg.getInts()));
-        channelHandlerContext.channel().writeAndFlush(heapBuffer).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
+        System.out.println(MessageUtil.intArrToByteArr(msg.getInts()));
+        channelHandlerContext.channel().writeAndFlush(heapBuffer).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
 //                    System.out.println("arrived");
-                } else {
+            } else {
 //                    System.out.println("fail");
-                }
-                if (future.isDone()) {
+            }
+            if (future.isDone()) {
 //                    System.out.println("done");
-                } else {
+            } else {
 //                    System.out.println("lose");
-                }
             }
         });
-
-//        ReferenceCountUtil.release(heapBuffer);
-
     }
 
 }

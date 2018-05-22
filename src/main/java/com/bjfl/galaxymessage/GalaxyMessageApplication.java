@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
         "com.bjfl.galaxymessage.controllers",
         "com.bjfl.galaxymessage.netty",
         "com.bjfl.galaxymessage.mqtt",
+        "com.bjfl.galaxymessage.websocket",
         "com.bjfl.galaxymessage.util"})
 public class GalaxyMessageApplication implements CommandLineRunner {
 

@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class ShipmentResultMessage extends Message {
 
     public ShipmentResultMessage() {
+        super();
     }
 
     public ShipmentResultMessage(int[] ints) {
@@ -20,7 +21,7 @@ public class ShipmentResultMessage extends Message {
     public void deal(ChannelHandlerContext ctx) {
         super.deal(ctx);
 
-        String machineCode = getMachineCode(6);
+        String machineCode = getMachineCode();
 
         System.out.println("查询出货结果rec:" + machineCode
                 + ", 状态:" + parseStatus(this.ints[this.ints.length - 6])

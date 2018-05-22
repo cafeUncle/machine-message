@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource(value = "classpath:config.properties", encoding = "utf-8")
-public class ConfigAuto {
+public class AdminConfig {
 
     @Value("${host}")
     public String host;

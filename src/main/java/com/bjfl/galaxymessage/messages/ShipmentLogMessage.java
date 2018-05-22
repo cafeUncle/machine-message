@@ -7,7 +7,9 @@ import java.util.stream.IntStream;
 
 public class ShipmentLogMessage extends Message {
 
-    public ShipmentLogMessage(){}
+    public ShipmentLogMessage(){
+        super();
+    }
 
     public ShipmentLogMessage(int[] ints) {
         super(ints);
@@ -17,7 +19,7 @@ public class ShipmentLogMessage extends Message {
     public void deal(ChannelHandlerContext ctx) {
         super.deal(ctx);
 
-        String machineCode = getMachineCode(6);
+        String machineCode = getMachineCode();
 
         System.out.println("获取出货日志rec:" + machineCode
                 + ", 日志(1存储芯片通讯异常2读取指令参数错误3日志读取成功4日志读取失败(没有查到当前日志)):" + this.ints[20]
