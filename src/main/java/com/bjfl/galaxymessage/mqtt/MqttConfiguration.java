@@ -52,6 +52,41 @@ public class MqttConfiguration {
     @Value("${shipmentResultInBound.topic}")
     private String shipmentResultInBoundTopic;
 
+    @Value("${shipmentLogInBound.clientId}")
+    private String shipmentLogInBoundClientId;
+    @Value("${shipmentLogInBound.topic}")
+    private String shipmentLogInBoundTopic;
+
+    @Value("${preposeMotorCaseInBound.clientId}")
+    private String preposeMotorCaseInBoundClientId;
+    @Value("${preposeMotorCaseInBound.topic}")
+    private String preposeMotorCaseInBoundTopic;
+
+    @Value("${preposeMotorHomeInBound.clientId}")
+    private String preposeMotorHomeInBoundClientId;
+    @Value("${preposeMotorHomeInBound.topic}")
+    private String preposeMotorHomeInBoundTopic;
+
+    @Value("${coorDinateCaseGoodInBound.clientId}")
+    private String coorDinateCaseGoodInBoundClientId;
+    @Value("${coorDinateCaseGoodInBound.topic}")
+    private String coorDinateCaseGoodInBoundTopic;
+
+    @Value("${coorDinateHomeInBound.clientId}")
+    private String coorDinateHomeInBoundClientId;
+    @Value("${coorDinateHomeInBound.topic}")
+    private String coorDinateHomeInBoundTopic;
+
+    @Value("${goodsSellCaseInBound.clientId}")
+    private String goodsSellCaseInBoundClientId;
+    @Value("${goodsSellCaseInBound.topic}")
+    private String goodsSellCaseInBoundTopic;
+
+    @Value("${goodsResetInBound.clientId}")
+    private String goodsResetInBoundClientId;
+    @Value("${goodsResetInBound.topic}")
+    private String goodsResetInBoundTopic;
+
     @Value("${mqtt.sender.clientId}")
     private String sendClientId;
 
@@ -89,6 +124,7 @@ public class MqttConfiguration {
         connOptions.setUserName(username);
         connOptions.setPassword(password.toCharArray());
         connOptions.setAutomaticReconnect(true);
+        connOptions.setConnectionTimeout(0);
         mqttClient.connect(connOptions);
         return mqttClient;
     }
@@ -131,6 +167,41 @@ public class MqttConfiguration {
     @Bean
     public MessageProducer shipmentResultInBound(MqttPahoClientFactory clientFactory, @Qualifier("shipmentResultInputChannel") MessageChannel mqttInputChannel) {
         return createAdapter(clientFactory, mqttInputChannel, shipmentResultInBoundClientId, shipmentResultInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer shipmentLogInBound(MqttPahoClientFactory clientFactory, @Qualifier("shipmentLogInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, shipmentLogInBoundClientId, shipmentLogInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer preposeMotorCaseInBound(MqttPahoClientFactory clientFactory, @Qualifier("preposeMotorCaseInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, preposeMotorCaseInBoundClientId, preposeMotorCaseInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer preposeMotorHomeInBound(MqttPahoClientFactory clientFactory, @Qualifier("preposeMotorHomeInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, preposeMotorHomeInBoundClientId, preposeMotorHomeInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer coorDinateCaseInBound(MqttPahoClientFactory clientFactory, @Qualifier("coorDinateCaseGoodInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, coorDinateCaseGoodInBoundClientId, coorDinateCaseGoodInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer coorDinateHomeInBound(MqttPahoClientFactory clientFactory, @Qualifier("coorDinateHomeInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, coorDinateHomeInBoundClientId, coorDinateHomeInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer goodsSellCaseInBound(MqttPahoClientFactory clientFactory, @Qualifier("goodsSellCaseInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, goodsSellCaseInBoundClientId, goodsSellCaseInBoundTopic);
+    }
+
+    @Bean
+    public MessageProducer goodsResetInBound(MqttPahoClientFactory clientFactory, @Qualifier("goodsResetInputChannel") MessageChannel mqttInputChannel) {
+        return createAdapter(clientFactory, mqttInputChannel, goodsResetInBoundClientId, goodsResetInBoundTopic);
     }
 
 

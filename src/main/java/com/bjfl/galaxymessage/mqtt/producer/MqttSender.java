@@ -18,13 +18,6 @@ public class MqttSender {
     @Value("heartBeatsInBound.topic")
     String heartBeatsTopic;
 
-    @Value("fourthGoodsSellCaseInBound.topic")
-    String fourthGoodsSellCaseTopic;
-
-    @Value("machineServerInBound.topic")
-    String machineServerInBoundTopic;
-
-
     public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
         // extract message machineCode orderCode
         shipmentResultMessage.getOrderCode();
@@ -37,7 +30,7 @@ public class MqttSender {
         MqttMessage message = new MqttMessage("Hello World. Hello MQTT.".getBytes());
         message.setQos(1);
         try {
-            clientTopic.publish(message);
+            clientTopic.publish("Hello World. Hello MQTT.".getBytes(), 1 ,false);
         } catch (MqttException e) {
             e.printStackTrace();
         }

@@ -33,7 +33,7 @@ public class TestController {
     public Response reset(String machineCode, int cabinetAddress, int device) {
         ChannelHandlerContext channelHandlerContext = NettyMessageHandler.clientList.get(machineCode);
         if (channelHandlerContext == null) {
-            return new Response(false, "该机器不在线");
+            return new Response(false, "该机器未注册");
         }
         try {
             ResetMessage resetMessage = new ResetMessage();
@@ -63,7 +63,7 @@ public class TestController {
     public Response cellStatus(String machineCode, int cabinetAddress, int clearFlag) {
         ChannelHandlerContext channelHandlerContext = NettyMessageHandler.clientList.get(machineCode);
         if (channelHandlerContext == null) {
-            return new Response(false, "该机器不在线");
+            return new Response(false, "该机器未注册");
         }
         try {
             CellStatusMessage cellStatusMessage = new CellStatusMessage();
@@ -95,7 +95,7 @@ public class TestController {
     public Response shipment(String machineCode, int cabinetAddress, String orderCode, int f, int b, int lr) {
         ChannelHandlerContext channelHandlerContext = NettyMessageHandler.clientList.get(machineCode);
         if (channelHandlerContext == null) {
-            return new Response(false, "该机器不在线");
+            return new Response(false, "该机器未注册");
         }
         try {
             List<Integer> data = new ArrayList<>();
@@ -128,7 +128,7 @@ public class TestController {
     public Response shipmentResult(String machineCode, int cabinetAddress, int isDeal) {
         ChannelHandlerContext channelHandlerContext = NettyMessageHandler.clientList.get(machineCode);
         if (channelHandlerContext == null) {
-            return new Response(false, "该机器不在线");
+            return new Response(false, "该机器未注册");
         }
         try {
             ShipmentResultMessage shipmentResultMessage = new ShipmentResultMessage();
@@ -158,19 +158,24 @@ public class TestController {
     public Response shipmentLog(String machineCode, int cabinetAddress, String orderCode, @RequestParam(required = false, defaultValue = "0") Integer times) {
         ChannelHandlerContext channelHandlerContext = NettyMessageHandler.clientList.get(machineCode);
         if (channelHandlerContext == null) {
-            return new Response(false, "该机器不在线");
+            return new Response(false, "该机器未注册");
         }
         try {
             List<Integer> data = new ArrayList<>();
             if (StringUtils.isEmpty(orderCode)) {
-                orderCode = "0000000000000000000000000";
+                data.addAll(Arrays.asList(
+                                0x00,0x00,0x00,0x00,0x00,
+                                0x00,0x00,0x00,0x00,0x00,
+                                0x00,0x00,0x00,0x00,0x00,
+                                0x00,0x00,0x00,0x00,0x00,
+                                0x00,0x00,0x00,0x00,0x00));
+            }else {
+                data.addAll(MessageUtil.strTo16(orderCode));
             }
-            data.addAll(MessageUtil.strTo16(orderCode));
-            data.addAll(Arrays.asList(times));
+            data.addAll(Arrays.asList(times, 0x00));
 
             ShipmentLogMessage shipmentLogMessage = new ShipmentLogMessage();
             shipmentLogMessage.generate(machineCode, cabinetAddress, MessageType.SHIPMENT_LOG.getCode(), data);
-
             if (channelHandlerContext.channel().isActive() && channelHandlerContext.channel().isWritable()) {
                 nettyMessageHandler.channelWrite(channelHandlerContext, shipmentLogMessage);
             }else {

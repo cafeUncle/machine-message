@@ -38,7 +38,6 @@ public class NettyServer {
          */
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        System.out.println("准备运行端口：" + port);
         try {
             /**
              * ServerBootstrap 是一个启动NIO服务的辅助启动类 你可以在这个服务中直接使用Channel

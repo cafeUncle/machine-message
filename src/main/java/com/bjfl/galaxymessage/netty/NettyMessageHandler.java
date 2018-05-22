@@ -54,9 +54,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
             }
-//            System.out.println("rec int[]:" + Arrays.toString(msgArr));
-//            System.out.println("rec hex:" + MessageUtil.intsToHexString(msgArr));
-
             if (MessageUtil.validate(msgArr)) {
                 Message msg = MessageFactory.parse(msgArr);
 
@@ -75,7 +72,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                             if (message != null) {
                                 channelWrite(clientList.get(message.getMachineCode(6)), message);
                             }else {
-                                System.out.println("货道查询指令携带信息解析异常, " + Arrays.toString(msgArr));
+//                                System.out.println("货道查询指令携带信息解析异常, " + Arrays.toString(msgArr));
                             }
                         }
                     }
@@ -174,7 +171,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
     public void channelWrite(ChannelHandlerContext channelHandlerContext, Message msg) {
         ByteBuf heapBuffer = Unpooled.buffer(msg.getInts().length);
         heapBuffer.writeBytes(MessageUtil.intArrToByteArr(msg.getInts()));
-
+        System.out.println(Arrays.toString(msg.getInts()));
         channelHandlerContext.channel().writeAndFlush(heapBuffer).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {

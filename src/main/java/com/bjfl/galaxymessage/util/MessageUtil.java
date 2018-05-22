@@ -33,10 +33,12 @@ public class MessageUtil {
     public static boolean validate(int[] msgArr) {
 
         if(msgArr[0] != 0x8E || msgArr[msgArr.length-1] != 0xED) {
+            System.out.println("应该为：8e,ed" + ",实际为：" + msgArr[0] + "," + msgArr[msgArr.length-1] + "," + Arrays.toString(msgArr));
             return false;
         }
 
-        if (msgArr[1] + msgArr[2] != msgArr.length) {
+        if (msgArr[1] * 256 + msgArr[2] != msgArr.length) {
+            System.out.println("应该为："+msgArr[1] * 256 + msgArr[2] + ",实际为" + msgArr.length + "," + Arrays.toString(msgArr));
             return false;
         }
 
@@ -49,6 +51,7 @@ public class MessageUtil {
         if (sum % 256 == msgArr[msgArr.length-2]) {
             return true;
         }else {
+            System.out.println("应该为：" + msgArr[msgArr.length-2] + ",实际为：" + sum % 256 + "," + Arrays.toString(msgArr));
             return false;
         }
     }

@@ -27,7 +27,7 @@ public class MqttReceiver {
     }
 
     /**
-     * 货道查询
+     * 查询货道状态
      * @return
      */
     @Bean
@@ -43,7 +43,7 @@ public class MqttReceiver {
     }
 
     /**
-     * 整体出货   要求先查询，再出货
+     * 整体出货
      * @return
      */
     @Bean
@@ -61,7 +61,7 @@ public class MqttReceiver {
     }
 
     /**
-     * 出货结果
+     * 获取出货结果
      * @return
      */
     @Bean
@@ -76,5 +76,111 @@ public class MqttReceiver {
         };
     }
 
+    /**
+     * 获取出货日志
+     * @return
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "shipmentLogInputChannel")
+    public MessageHandler shipmentLogHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("shipmentLogInputChannel:" + message.getPayload());
+            }
+
+        };
+    }
+
+    /**
+     * 前置货梯测试
+     * @return
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "preposeMotorCaseInputChannel")
+    public MessageHandler preposeMotorCaseHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("preposeMotorCaseInputChannel:" + message.getPayload());
+            }
+
+        };
+    }
+
+    /**
+     * 前置货梯归位
+     * @return
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "preposeMotorHomeInputChannel")
+    public MessageHandler preposeMotorHomeHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("preposeMotorHomeInputChannel:" + message.getPayload());
+            }
+
+        };
+    }
+
+    /**
+     * 后置推手测试
+     * @return
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "coorDinateCaseGoodInputChannel")
+    public MessageHandler coorDinateCaseGoodHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("coorDinateCaseGoodInputChannel:" + message.getPayload());
+            }
+
+        };
+    }
+
+    /**
+     * 后置推手归位
+     * @return
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "coorDinateHomeInputChannel")
+    public MessageHandler coorDinateHomeHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("coorDinateHomeInputChannel:" + message.getPayload());
+            }
+        };
+    }
+
+    /**
+     * 出货测试
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "goodsSellCaseInputChannel")
+    public MessageHandler goodsSellCaseHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("goodsSellCaseInputChannel:" + message.getPayload());
+            }
+        };
+    }
+
+    /**
+     * 复位
+     */
+    @Bean
+    @ServiceActivator(inputChannel = "goodsResetInputChannel")
+    public MessageHandler goodsResetHandler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+                System.out.println("goodsResetInputChannel:" + message.getPayload());
+            }
+        };
+    }
 
 }
