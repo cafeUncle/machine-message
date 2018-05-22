@@ -5,6 +5,7 @@ import com.bjfl.galaxymessage.mqtt.MqttSender;
 import com.bjfl.galaxymessage.parser.CellStatusMessageParser;
 import com.bjfl.galaxymessage.parser.MessageFactory;
 import com.bjfl.galaxymessage.parser.MessageType;
+import com.bjfl.galaxymessage.util.Constants;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import com.bjfl.galaxymessage.websocket.MyWebSocket;
 import io.netty.buffer.ByteBuf;
@@ -21,11 +22,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 服务端处理通道.这里只是打印一下请求的内容，并不对请求进行任何的响应 NettyMessageHandler 继承自
- * ChannelHandlerAdapter， 这个类实现了ChannelHandler接口， ChannelHandler提供了许多事件处理的接口方法，
- * 然后你可以覆盖这些方法。 现在仅仅只需要继承ChannelHandlerAdapter类而不是你自己去实现接口方法。
- */
 @Component
 @ChannelHandler.Sharable
 public class NettyMessageHandler extends ChannelHandlerAdapter {
@@ -37,10 +33,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
 
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
 
-    /**
-     * @param ctx 通道处理的上下文信息
-     * @param o   接收的消息
-     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object o) {
         try {
@@ -53,6 +45,8 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             }
 
             if (MessageUtil.validate(msgArr)) {
+                System.out.println("validate done :" + MessageUtil.intsToHexString(msgArr));
+
                 Message msg = MessageFactory.parse(msgArr);
 
                 if (msg != null) {
@@ -68,11 +62,11 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                             mqttSender.sendCellStatus((CellStatusMessage)msg);
 
                         }else {
-                            Message message = CellStatusMessageParser.parse(cellStatusMessage);
-                            if (message != null) {
-                                channelWrite(clientList.get(message.getMachineCode()), message);
+                            Message nextMessage = CellStatusMessageParser.parse(cellStatusMessage);
+                            if (nextMessage != null) {
+                                channelWrite(clientList.get(nextMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET)), nextMessage);
                             }else {
-//                                System.out.println("货道查询指令携带信息解析异常, " + Arrays.toString(msgArr));
+                                System.out.println("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
                             }
                         }
                     }else if (msg instanceof ShipmentMessage) {
@@ -82,14 +76,27 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                         mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
 
                     }else if (msg instanceof ShipmentLogMessage) {
-                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
+                        mqttSender.sendShipmentLogMessage((ShipmentLogMessage)msg);
 
                     }else if (msg instanceof ResetMessage) {
                         mqttSender.sendResetMessage((ResetMessage) msg);
+
+                    }else if (msg instanceof PreposeMotorCaseMessage) {
+                        mqttSender.sendPreposeMotorCaseMessage((PreposeMotorCaseMessage) msg);
+
+                    }else if (msg instanceof PreposeMotorHomeMessage) {
+                        mqttSender.sendPreposeMotorHomeMessage((PreposeMotorHomeMessage) msg);
+
+                    }else if (msg instanceof CoorDinateCaseMessage) {
+                        mqttSender.sendCoorDinateCaseMessage((CoorDinateCaseMessage) msg);
+
+                    }else if (msg instanceof CoorDinateHomeMessage) {
+                        mqttSender.sendCoorDinateHomeMessage((CoorDinateHomeMessage) msg);
+
                     }
                 }
             } else {
-                System.out.println("校验失败:" + MessageUtil.intsToHexString(msgArr));
+                System.out.println("validate error:" + MessageUtil.intsToHexString(msgArr));
             }
         } finally {
             ReferenceCountUtil.release(o);
@@ -129,19 +136,8 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
     public void channelWrite(ChannelHandlerContext channelHandlerContext, Message msg) {
         ByteBuf heapBuffer = Unpooled.buffer(msg.getInts().length);
         heapBuffer.writeBytes(MessageUtil.intArrToByteArr(msg.getInts()));
-        System.out.println(MessageUtil.intArrToByteArr(msg.getInts()));
-        channelHandlerContext.channel().writeAndFlush(heapBuffer).addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) {
-//                    System.out.println("arrived");
-            } else {
-//                    System.out.println("fail");
-            }
-            if (future.isDone()) {
-//                    System.out.println("done");
-            } else {
-//                    System.out.println("lose");
-            }
-        });
+        channelHandlerContext.channel().writeAndFlush(heapBuffer);
+        System.out.println("sendToMachine-" + new String(msg.getInts(), 3, 13) + ":" + MessageUtil.intsToHexString(msg.getInts()));
     }
 
 }

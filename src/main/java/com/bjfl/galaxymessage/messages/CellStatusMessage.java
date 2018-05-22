@@ -1,6 +1,7 @@
 package com.bjfl.galaxymessage.messages;
 
 import com.bjfl.galaxymessage.parser.MessageType;
+import com.bjfl.galaxymessage.util.Constants;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class CellStatusMessage extends Message {
     public void deal(ChannelHandlerContext ctx) {
         super.deal(ctx);
 
-        String machineCode = getMachineCode();
+        String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         System.out.println("查询货道状态rec:" + machineCode +
                 ", 能否出货(0能1不能):" + this.ints[26] +

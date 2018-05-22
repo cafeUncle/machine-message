@@ -1,10 +1,8 @@
 package com.bjfl.galaxymessage.mqtt;
 
-import com.bjfl.galaxymessage.messages.CellStatusMessage;
-import com.bjfl.galaxymessage.messages.ResetMessage;
-import com.bjfl.galaxymessage.messages.ShipmentMessage;
-import com.bjfl.galaxymessage.messages.ShipmentResultMessage;
+import com.bjfl.galaxymessage.messages.*;
 import com.bjfl.galaxymessage.mqtt.MqttConfiguration;
+import com.bjfl.galaxymessage.util.Constants;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,29 +18,50 @@ public class MqttSender {
     @Value("heartBeatsInBound.topic")
     String heartBeatsTopic;
 
-    public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
-        // extract message machineCode orderCode
-        shipmentResultMessage.getOrderCode();
-        shipmentResultMessage.getMachineCode();
-        //
-    }
-
-    public void sendCellStatus(CellStatusMessage msg) {
-        MqttTopic clientTopic = mqttClient.getTopic(msg.getTopic());
+    public void sendCellStatus(CellStatusMessage cellStatusMessage) {
+        MqttTopic clientTopic = mqttClient.getTopic(cellStatusMessage.getTopic());
         MqttMessage message = new MqttMessage("Hello World. Hello MQTT.".getBytes());
         message.setQos(1);
+        message.setRetained(false);
         try {
-            clientTopic.publish("Hello World. Hello MQTT.".getBytes(), 1 ,false);
+            clientTopic.publish(message);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendShipment(ShipmentMessage msg) {
+    public void sendShipment(ShipmentMessage shipmentMessage) {
 
     }
 
-    public void sendResetMessage(ResetMessage msg) {
+    public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
+        // extract message machineCode orderCode
+        shipmentResultMessage.getOrderCode();
+        shipmentResultMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
+        //
+    }
+
+    public void sendShipmentLogMessage(ShipmentLogMessage shipmentLogMessage) {
+
+    }
+
+    public void sendResetMessage(ResetMessage resetMessage) {
+
+    }
+
+    public void sendPreposeMotorCaseMessage(PreposeMotorCaseMessage preposeMotorCaseMessage) {
+
+    }
+
+    public void sendPreposeMotorHomeMessage(PreposeMotorHomeMessage preposeMotorHomeMessage) {
+
+    }
+
+    public void sendCoorDinateCaseMessage(CoorDinateCaseMessage coorDinateCaseMessage) {
+
+    }
+
+    public void sendCoorDinateHomeMessage(CoorDinateHomeMessage coorDinateHomeMessage) {
 
     }
 }

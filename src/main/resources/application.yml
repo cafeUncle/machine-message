@@ -2,8 +2,6 @@ server:
   port: 8082
   tomcat:
     uri-encoding: utf-8
-netty:
-  port: 6666
 spring:
   http:
     encoding:
@@ -11,11 +9,7 @@ spring:
   banner:
     charset: UTF-8
   application:
-    name: log4j2
-
-admin:
-  username: guest
-  password: guest
+    name: galaxy-message
 
 logging:
   path: ./logs

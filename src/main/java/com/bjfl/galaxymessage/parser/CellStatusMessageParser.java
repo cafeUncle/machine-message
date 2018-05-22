@@ -31,9 +31,12 @@ public class CellStatusMessageParser {
 //                ShipmentMessage shipmentMessage = new ShipmentMessage();
 //                shipmentMessage.generate(machineCode, cabinetAddress, MessageType.SHIPMENT.getCode(), integers);
 //                return shipmentMessage;
+            case SHIPMENT_LOG:
             case RESET:
-
-//            case
+            case PREPOSE_MOTOR_CASE:
+            case PREPOSE_MOTOR_HOME:
+            case COORDINATE_CASE:
+            case COORDINATE_HOME:
             default:
                 return null;
         }

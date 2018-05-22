@@ -1,5 +1,6 @@
 package com.bjfl.galaxymessage.mqtt;
 
+import com.bjfl.galaxymessage.util.Constants;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -26,8 +27,6 @@ public class MqttConfiguration {
     private String username;
     @Value("${mq.password}")
     private String password;
-    @Value("${qos}")
-    private Integer qos;
     @Value("${completionTimeout}")
     private Integer completionTimeout;
 
@@ -144,7 +143,7 @@ public class MqttConfiguration {
         adapter.setCompletionTimeout(completionTimeout);
         //转换器
         adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setQos(qos);
+        adapter.setQos(Constants.MQTT_QOS);
         adapter.setOutputChannel(mqttInputChannel);
         return adapter;
     }

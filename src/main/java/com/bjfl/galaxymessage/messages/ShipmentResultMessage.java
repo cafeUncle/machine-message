@@ -1,5 +1,6 @@
 package com.bjfl.galaxymessage.messages;
 
+import com.bjfl.galaxymessage.util.Constants;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -21,7 +22,7 @@ public class ShipmentResultMessage extends Message {
     public void deal(ChannelHandlerContext ctx) {
         super.deal(ctx);
 
-        String machineCode = getMachineCode();
+        String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         System.out.println("查询出货结果rec:" + machineCode
                 + ", 状态:" + parseStatus(this.ints[this.ints.length - 6])
