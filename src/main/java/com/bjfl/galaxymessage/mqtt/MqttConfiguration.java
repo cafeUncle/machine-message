@@ -89,6 +89,12 @@ public class MqttConfiguration {
     @Value("${mqtt.sender.clientId}")
     private String sendClientId;
 
+    @Value("${heartBeats.topic}")
+    protected String heartBeatsTopic;
+
+    @Value("${forthShipmentError.topic}")
+    private String shipmentErrorTopic;
+
     /**
      * 消息通道
      *
@@ -112,6 +118,7 @@ public class MqttConfiguration {
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(password.toCharArray());
         mqttConnectOptions.setAutomaticReconnect(true);
+        mqttConnectOptions.setCleanSession(false); // 为true时，每次连接会产生一个session，broker会基于session保存因client不在线而没收到的消息，在在线后重新发送
         clientFactory.setConnectionOptions(mqttConnectOptions);
         return clientFactory;
     }
@@ -123,7 +130,8 @@ public class MqttConfiguration {
         connOptions.setUserName(username);
         connOptions.setPassword(password.toCharArray());
         connOptions.setAutomaticReconnect(true);
-        connOptions.setConnectionTimeout(0);
+        connOptions.setConnectionTimeout(Constants.MQTT_KEEP_CONNECTION_TIMEOUT);
+        connOptions.setKeepAliveInterval(Constants.MQTT_KEEP_ALIVE_INTERNAL);
         mqttClient.connect(connOptions);
         return mqttClient;
     }

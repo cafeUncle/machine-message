@@ -86,10 +86,6 @@ public class MessageUtil {
         return bytes;
     }
 
-    public static boolean notExpired(long timestamp, long expireTime) {
-        return System.currentTimeMillis() <= timestamp + expireTime;
-    }
-
     public static List<Integer> generateEmptyCode(int length) {
         return IntStream.range(0, length).mapToObj(a -> 0x00).collect(Collectors.toList());
     }

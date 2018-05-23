@@ -20,9 +20,8 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("test:" + message.getPayload());
+                System.out.println("testInputChannel:" + message.getPayload());
             }
-
         };
     }
 
@@ -53,8 +52,6 @@ public class MqttReceiver {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("shipmentInputChannel:" + message.getPayload());
-                Object payload = message.getPayload();
-
             }
 
         };
@@ -72,7 +69,6 @@ public class MqttReceiver {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("shipmentResultInputChannel:" + message.getPayload());
             }
-
         };
     }
 
@@ -88,7 +84,6 @@ public class MqttReceiver {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("shipmentLogInputChannel:" + message.getPayload());
             }
-
         };
     }
 
@@ -104,7 +99,6 @@ public class MqttReceiver {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("preposeMotorCaseInputChannel:" + message.getPayload());
             }
-
         };
     }
 
@@ -120,7 +114,6 @@ public class MqttReceiver {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("preposeMotorHomeInputChannel:" + message.getPayload());
             }
-
         };
     }
 
@@ -136,7 +129,6 @@ public class MqttReceiver {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println("coorDinateCaseGoodInputChannel:" + message.getPayload());
             }
-
         };
     }
 

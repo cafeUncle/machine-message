@@ -69,6 +69,9 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                                 System.out.println("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
                             }
                         }
+                    }else if (msg instanceof HeartBeatMessage) {
+                        mqttSender.sendHeartBeatsMessage((HeartBeatMessage)msg);
+
                     }else if (msg instanceof ShipmentMessage) {
                         mqttSender.sendShipment((ShipmentMessage)msg);
 
@@ -77,21 +80,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
 
                     }else if (msg instanceof ShipmentLogMessage) {
                         mqttSender.sendShipmentLogMessage((ShipmentLogMessage)msg);
-
-                    }else if (msg instanceof ResetMessage) {
-                        mqttSender.sendResetMessage((ResetMessage) msg);
-
-                    }else if (msg instanceof PreposeMotorCaseMessage) {
-                        mqttSender.sendPreposeMotorCaseMessage((PreposeMotorCaseMessage) msg);
-
-                    }else if (msg instanceof PreposeMotorHomeMessage) {
-                        mqttSender.sendPreposeMotorHomeMessage((PreposeMotorHomeMessage) msg);
-
-                    }else if (msg instanceof CoorDinateCaseMessage) {
-                        mqttSender.sendCoorDinateCaseMessage((CoorDinateCaseMessage) msg);
-
-                    }else if (msg instanceof CoorDinateHomeMessage) {
-                        mqttSender.sendCoorDinateHomeMessage((CoorDinateHomeMessage) msg);
 
                     }
                 }
@@ -112,6 +100,18 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
         } else {
             System.out.println("[" + channel.remoteAddress() + "] is offline");
         }
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+        System.out.println(ctx.channel().remoteAddress() + ":unregister");
+    }
+
+    @Override
+    public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+        super.deregister(ctx, promise);
+        System.out.println(ctx.channel().remoteAddress() + ":deregister");
     }
 
     @Override
