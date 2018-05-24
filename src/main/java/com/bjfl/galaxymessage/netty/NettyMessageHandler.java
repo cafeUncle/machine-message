@@ -125,7 +125,8 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
                 if (ctx.equals(entry.getValue())) {
                     clientList.remove(entry.getKey());
-                    System.out.println("[" + entry.getKey() + "] exception:" + cause.toString());
+                    System.out.println("[" + entry.getKey() + "] exception:" + cause.getMessage());
+                    cause.printStackTrace();
                     break;
                 }
             }

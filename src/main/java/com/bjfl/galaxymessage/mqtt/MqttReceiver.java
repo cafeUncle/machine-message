@@ -117,7 +117,7 @@ public class MqttReceiver {
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = fourthPreposeMotorCaseRequest.getPosition();
-
+                        if (position == 0) {position=1;}
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -150,7 +150,7 @@ public class MqttReceiver {
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = homeRequest.getPosition();
-
+                        if (position == 0) {position=1;}
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -309,7 +309,7 @@ public class MqttReceiver {
             cellStatusMessage.generate(machineCode, position, MessageType.CELL_STATUS.getCode(), Arrays.asList(0x00, 0x01, 0x01));
             nettyMessageHandler.channelWrite(ctx, cellStatusMessage);
             try {
-                Thread.sleep(300);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 return false;

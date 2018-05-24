@@ -58,7 +58,7 @@ public class MqRequest {
     }
 
     public boolean notExpired() {
-        return System.currentTimeMillis() <= this.timestamp + this.expireTime;
+        return System.currentTimeMillis() <= this.timestamp + this.expireTime * 1000;
     }
 
 }
