@@ -1,7 +1,7 @@
 package com.bjfl.galaxymessage;
 
 import com.alibaba.fastjson.JSON;
-import com.bjfl.galaxymessage.models.request.ForthShipmentRequest;
+import com.bjfl.galaxymessage.models.request.FourthShipmentRequest;
 import org.junit.Test;
 
 public class TestCase {
@@ -20,8 +20,8 @@ public class TestCase {
                 "     \"expireTime\" : 30\n" +
                 " }";
 
-        ForthShipmentRequest forthShipmentRequest = JSON.parseObject(jsonStr, ForthShipmentRequest.class);
-        System.out.println(forthShipmentRequest);
-        System.out.println(forthShipmentRequest.notExpired());
+        FourthShipmentRequest fourthShipmentRequest = JSON.parseObject(jsonStr, FourthShipmentRequest.class);
+        System.out.println(fourthShipmentRequest);
+        System.out.println(fourthShipmentRequest.notExpired());
     }
 }

@@ -2,11 +2,11 @@ package com.bjfl.galaxymessage.models.request;
 
 import com.bjfl.galaxymessage.models.MqRequest;
 
-public class ForthPreposeMotorHomeRequest extends MqRequest {
+public class FourthCellStatusRequest extends MqRequest {
 
     @Override
     public String toString() {
-        return "ForthPreposeMotorHomeRequest{" +
+        return "FourthCellStatusRequest{" +
                 "theme='" + theme + '\'' +
                 ", machineNo='" + machineNo + '\'' +
                 ", machineCode='" + machineCode + '\'' +

@@ -2,7 +2,7 @@ package com.bjfl.galaxymessage.models.request;
 
 import com.bjfl.galaxymessage.models.MqRequest;
 
-public class ForthCoorDinateCaseGoodRequest extends MqRequest {
+public class FourthCoorDinateCaseGoodRequest extends MqRequest {
 
     private int xAxis;
     private int yAxis;
@@ -25,7 +25,7 @@ public class ForthCoorDinateCaseGoodRequest extends MqRequest {
 
     @Override
     public String toString() {
-        return "ForthCoorDinateCaseGoodRequest{" +
+        return "FourthCoorDinateCaseGoodRequest{" +
                 "xAxis=" + xAxis +
                 ", yAxis=" + yAxis +
                 ", theme='" + theme + '\'' +

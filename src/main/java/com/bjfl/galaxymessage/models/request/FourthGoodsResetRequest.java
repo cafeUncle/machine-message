@@ -2,11 +2,11 @@ package com.bjfl.galaxymessage.models.request;
 
 import com.bjfl.galaxymessage.models.MqRequest;
 
-public class ForthGoodsResetRequest extends MqRequest {
+public class FourthGoodsResetRequest extends MqRequest {
 
     @Override
     public String toString() {
-        return "ForthGoodsResetRequest{" +
+        return "FourthGoodsResetRequest{" +
                 "theme='" + theme + '\'' +
                 ", machineNo='" + machineNo + '\'' +
                 ", machineCode='" + machineCode + '\'' +

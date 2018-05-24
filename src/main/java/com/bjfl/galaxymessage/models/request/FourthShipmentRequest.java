@@ -2,7 +2,7 @@ package com.bjfl.galaxymessage.models.request;
 
 import com.bjfl.galaxymessage.models.MqRequest;
 
-public class ForthShipmentRequest extends MqRequest {
+public class FourthShipmentRequest extends MqRequest {
     private Integer orderId;
     private int xAxis;
     private int yAxis;
@@ -42,7 +42,7 @@ public class ForthShipmentRequest extends MqRequest {
 
     @Override
     public String toString() {
-        return "ForthShipmentRequest{" +
+        return "FourthShipmentRequest{" +
                 "orderId=" + orderId +
                 ", xAxis=" + xAxis +
                 ", yAxis=" + yAxis +

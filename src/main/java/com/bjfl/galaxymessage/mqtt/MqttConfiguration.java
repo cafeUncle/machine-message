@@ -17,6 +17,8 @@ import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannel
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 
+import java.util.Random;
+
 @Configuration
 @PropertySource(value = "classpath:mqtt.properties")
 public class MqttConfiguration {
@@ -92,8 +94,10 @@ public class MqttConfiguration {
     @Value("${heartBeats.topic}")
     protected String heartBeatsTopic;
 
-    @Value("${forthShipmentError.topic}")
+    @Value("${fourthShipmentError.topic}")
     private String shipmentErrorTopic;
+
+    private int random = new Random().nextInt(1000);
 
     /**
      * 消息通道
@@ -145,8 +149,9 @@ public class MqttConfiguration {
      */
     private MqttPahoMessageDrivenChannelAdapter createAdapter(MqttPahoClientFactory clientFactory, MessageChannel mqttInputChannel, String clientId, String topic) {
         //clientId 客户端ID，生产端和消费端的客户端ID需不同，不然服务器会认为是同一个客户端，会接收不到信息
+        // + random 参数，保证生产端和测试端 两端之间clientId不同。同端内的clientId用配置文件实现不同
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(clientId, clientFactory, topic);
+                new MqttPahoMessageDrivenChannelAdapter(clientId + random, clientFactory, topic);
         //超时时间
         adapter.setCompletionTimeout(completionTimeout);
         //转换器

@@ -2,21 +2,22 @@ package com.bjfl.galaxymessage.models.request;
 
 import com.bjfl.galaxymessage.models.MqRequest;
 
-public class ForthPreposeMotorCaseRequest extends MqRequest {
-    private int zAxis;
+public class FourthShipmentResultRequest extends MqRequest {
 
-    public int getzAxis() {
-        return zAxis;
+    private Integer orderId;
+
+    public Integer getOrderId() {
+        return orderId;
     }
 
-    public void setzAxis(int zAxis) {
-        this.zAxis = zAxis;
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
     }
 
     @Override
     public String toString() {
-        return "ForthPreposeMotorCaseRequest{" +
-                "zAxis=" + zAxis +
+        return "FourthShipmentResultRequest{" +
+                "orderId=" + orderId +
                 ", theme='" + theme + '\'' +
                 ", machineNo='" + machineNo + '\'' +
                 ", machineCode='" + machineCode + '\'' +
