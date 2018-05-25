@@ -22,7 +22,7 @@ public class CoorDinateCaseMessage extends Message {
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         System.out.println("后置和左右电机测试rec:" + machineCode +
-                ", 是否成功(1成功2失败):" + this.ints[27] +
+                ", 是否成功(1成功2失败):" + this.ints[26] +
                 ", 16进制数组:" + Arrays.toString(this.ints));
 
     }

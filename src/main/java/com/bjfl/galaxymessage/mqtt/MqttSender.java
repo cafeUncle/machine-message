@@ -2,13 +2,13 @@ package com.bjfl.galaxymessage.mqtt;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bjfl.galaxymessage.messages.*;
-import com.bjfl.galaxymessage.mqtt.MqttConfiguration;
 import com.bjfl.galaxymessage.util.Constants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -62,7 +62,7 @@ public class MqttSender {
 
     }
 
-    private void send(JSONObject jsonObject, String topic){
+    private void send(JSONObject jsonObject, String topic) {
         jsonObject.put("timestamp", System.currentTimeMillis());
         jsonObject.put("expireTime", 1000);
         MqttTopic clientTopic = mqttClient.getTopic(topic);

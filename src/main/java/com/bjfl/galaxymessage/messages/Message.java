@@ -48,7 +48,7 @@ public class Message implements Serializable {
         msg.addAll(machineCodeHex);
         msg.add(cabinetAddress);
         msg.add(command);
-        msg.add(0x00); //数据01, 主机地址, 暂不关注, 默认 0x00
+//        msg.add(0x00); //数据01, 主机地址, 暂不关注, 默认 0x00
         msg.addAll(data);
         //更改长度
         msg.set(1, (msg.size()+2) >>> 8);

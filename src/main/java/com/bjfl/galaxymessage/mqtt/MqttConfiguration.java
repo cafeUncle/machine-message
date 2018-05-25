@@ -1,6 +1,7 @@
 package com.bjfl.galaxymessage.mqtt;
 
 import com.bjfl.galaxymessage.util.Constants;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -122,7 +123,9 @@ public class MqttConfiguration {
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(password.toCharArray());
         mqttConnectOptions.setAutomaticReconnect(true);
-        mqttConnectOptions.setCleanSession(false); // 为true时，每次连接会产生一个session，broker会基于session保存因client不在线而没收到的消息，在在线后重新发送
+        mqttConnectOptions.setCleanSession(true); // 为true时，每次连接会产生一个session，broker会基于session保存因client不在线而没收到的消息，在在线后重新发送
+        mqttConnectOptions.setKeepAliveInterval(Constants.MQTT_KEEP_ALIVE_INTERNAL);
+        mqttConnectOptions.setConnectionTimeout(Constants.MQTT_KEEP_CONNECTION_TIMEOUT);
         clientFactory.setConnectionOptions(mqttConnectOptions);
         return clientFactory;
     }
