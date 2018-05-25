@@ -37,7 +37,7 @@ public class TestController {
         }
         try {
             ResetMessage resetMessage = new ResetMessage();
-            resetMessage.generate(machineCode, cabinetAddress, MessageType.RESET.getCode(), Arrays.asList(device, 0x00));
+            resetMessage.generate(machineCode, cabinetAddress, MessageType.RESET.getCode(), Arrays.asList(0x00, device, 0x00));
 
             if (channelHandlerContext.channel().isActive() && channelHandlerContext.channel().isWritable()) {
                 nettyMessageHandler.channelWrite(channelHandlerContext, resetMessage);
@@ -67,7 +67,7 @@ public class TestController {
         }
         try {
             CellStatusMessage cellStatusMessage = new CellStatusMessage();
-            cellStatusMessage.generate(machineCode, cabinetAddress, MessageType.CELL_STATUS.getCode(), Arrays.asList(clearFlag, 0x01));
+            cellStatusMessage.generate(machineCode, cabinetAddress, MessageType.CELL_STATUS.getCode(), Arrays.asList(0x00, clearFlag, 0x01));
 
             if (channelHandlerContext.channel().isActive() && channelHandlerContext.channel().isWritable()) {
                 nettyMessageHandler.channelWrite(channelHandlerContext, cellStatusMessage);
@@ -100,7 +100,7 @@ public class TestController {
         try {
             List<Integer> data = new ArrayList<>();
             data.addAll(MessageUtil.strTo16(orderCode));
-            data.addAll(Arrays.asList(0x01, f >>> 8, f & 0xff, 0x02, b >>> 8, b & 0xff, 0x03, lr >>> 8, lr & 0xff));
+            data.addAll(Arrays.asList(0x00, 0x01, f >>> 8, f & 0xff, 0x02, b >>> 8, b & 0xff, 0x03, lr >>> 8, lr & 0xff));
 
             ShipmentMessage shipmentMessage = new ShipmentMessage();
             shipmentMessage.generate(machineCode, cabinetAddress, MessageType.SHIPMENT.getCode(), data);
@@ -132,7 +132,7 @@ public class TestController {
         }
         try {
             ShipmentResultMessage shipmentResultMessage = new ShipmentResultMessage();
-            shipmentResultMessage.generate(machineCode, cabinetAddress, MessageType.SHIPMENT_RESULT.getCode(), Arrays.asList(isDeal, 0x00));
+            shipmentResultMessage.generate(machineCode, cabinetAddress, MessageType.SHIPMENT_RESULT.getCode(), Arrays.asList(0x00, isDeal, 0x00));
 
             if (channelHandlerContext.channel().isActive() && channelHandlerContext.channel().isWritable()) {
                 nettyMessageHandler.channelWrite(channelHandlerContext, shipmentResultMessage);
@@ -162,6 +162,7 @@ public class TestController {
         }
         try {
             List<Integer> data = new ArrayList<>();
+            data.add(0x00);
             if (StringUtils.isEmpty(orderCode)) {
                 data.addAll(MessageUtil.generateEmptyCode(25));
             }else {

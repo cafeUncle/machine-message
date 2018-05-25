@@ -36,7 +36,7 @@ public class MqttSender {
     }
 
     public void sendShipment(ShipmentMessage shipmentMessage) {
-
+//        message.setRetained(false);  重要的保留，不重要的不需要保留
     }
 
     public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
@@ -44,6 +44,7 @@ public class MqttSender {
         shipmentResultMessage.getOrderCode();
         shipmentResultMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
         //
+//        message.setRetained(false);
     }
 
     public void sendShipmentLogMessage(ShipmentLogMessage shipmentLogMessage) {
@@ -68,7 +69,7 @@ public class MqttSender {
         MqttTopic clientTopic = mqttClient.getTopic(topic);
         MqttMessage message = new MqttMessage(jsonObject.toString().getBytes());
         message.setQos(Constants.MQTT_QOS);
-        message.setRetained(false);
+        message.setRetained(true);
         try {
             clientTopic.publish(message);
         } catch (MqttException e) {

@@ -1,6 +1,8 @@
 package com.bjfl.galaxymessage.netty;
 
+import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -8,10 +10,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+
+import javax.print.attribute.standard.MediaSize;
 
 /**
  * 丢弃任何进入的数据 启动服务端的DiscardServerHandler
@@ -62,7 +67,8 @@ public class NettyServer {
             bootstrap = bootstrap.childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(nettyMessageHandler);// demo1.discard
+                    ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer(MessageUtil.intArrToByteArr(new int[]{0xed}))));
+                    ch.pipeline().addLast(nettyMessageHandler);
                     // ch.pipeline().addLast(new
                     // ResponseServerHandler());//demo2.echo
                     // ch.pipeline().addLast(new
@@ -73,8 +79,9 @@ public class NettyServer {
              * 你可以设置这里指定的通道实现的配置参数。 我们正在写一个TCP/IP的服务端，
              * 因此我们被允许设置socket的参数选项比如tcpNoDelay和keepAlive。
              * 请参考ChannelOption和详细的ChannelConfig实现的接口文档以此可以对ChannelOptions的有一个大概的认识。
+             * 最大客户端连接数为1280
              */
-            bootstrap = bootstrap.option(ChannelOption.SO_BACKLOG, 128);
+            bootstrap = bootstrap.option(ChannelOption.SO_BACKLOG, 1280);
             /***
              * option()是提供给NioServerSocketChannel用来接收进来的连接。
              * childOption()是提供给由父管道ServerChannel接收到的连接，
