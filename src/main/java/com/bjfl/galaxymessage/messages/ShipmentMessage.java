@@ -21,7 +21,7 @@ public class ShipmentMessage extends Message {
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         System.out.println("整体出货指令rec:" + machineCode
-                + ", 是否执行成功(1成功2失败):" + this.ints[this.ints.length-2]
+                + ", 是否执行成功(1成功2失败):" + this.ints[this.ints.length-3]
                 + ",16进制数组:" + MessageUtil.intsToHexString(this.ints));
 
     }
