@@ -6,7 +6,7 @@ def LOG_HOME = "./logs"
 
 appender("STDOUT", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} %caller{1} - %msg%n"
+        pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
         charset = Charset.forName("utf8")
     }
 }

@@ -2,6 +2,7 @@ package com.bjfl.galaxymessage.netty;
 
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -64,15 +65,15 @@ public class NettyServer {
              * 或者其对应的ChannelPipeline来实现你的网络程序。 当你的程序变的复杂时，可能你会增加更多的处理类到pipline上，
              * 然后提取这些匿名类到最顶层的类上。
              */
-            bootstrap = bootstrap.childHandler(new ChannelInitializer<SocketChannel>() { // (4)
+            bootstrap = bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer(MessageUtil.intArrToByteArr(new int[]{0xed}))));
+                    ch.pipeline().addLast(
+                            new DelimiterBasedFrameDecoder(
+                                    10240,
+                                    Unpooled.copiedBuffer(new byte[]{(byte) 0xED}))
+                    );
                     ch.pipeline().addLast(nettyMessageHandler);
-                    // ch.pipeline().addLast(new
-                    // ResponseServerHandler());//demo2.echo
-                    // ch.pipeline().addLast(new
-                    // TimeServerHandler());//demo3.time
                 }
             });
             /***
@@ -105,4 +106,11 @@ public class NettyServer {
         }
     }
 
+}
+
+class A extends DelimiterBasedFrameDecoder{
+
+    public A(int maxFrameLength, ByteBuf delimiter) {
+        super(maxFrameLength, delimiter);
+    }
 }

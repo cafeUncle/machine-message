@@ -97,6 +97,12 @@
             <version>1.2.47</version>
         </dependency>
 
+        <!-- groovy -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

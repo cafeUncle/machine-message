@@ -40,7 +40,7 @@ public class MessageUtil {
         }
 
         if (msgArr[1] * 256 + msgArr[2] != msgArr.length) {
-            System.out.println("应该为："+msgArr[1] * 256 + msgArr[2] + ",实际为" + msgArr.length + "," + Arrays.toString(msgArr));
+            System.out.println("应该为："+ (msgArr[1] * 256 + msgArr[2]) + ",实际为" + msgArr.length + "," + Arrays.toString(msgArr));
             return false;
         }
 

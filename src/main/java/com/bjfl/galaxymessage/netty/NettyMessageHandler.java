@@ -11,10 +11,9 @@ import com.bjfl.galaxymessage.websocket.MyWebSocket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.GlobalEventExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @ChannelHandler.Sharable
 public class NettyMessageHandler extends ChannelHandlerAdapter {
+
+    final Logger logger = LoggerFactory.getLogger(NettyMessageHandler.class);
 
     @Autowired
     MqttSender mqttSender;
@@ -39,10 +40,13 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             ByteBuf buf = (ByteBuf) o;
             byte[] byteArray = new byte[buf.readableBytes()];
             buf.readBytes(byteArray);
-            int[] msgArr = new int[byteArray.length];
+            logger.info("rec bytes:" + Arrays.toString(byteArray));
+            int[] msgArr = new int[byteArray.length + 1];
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
             }
+            msgArr[msgArr.length-1] = 0xED;
+            logger.info("rec ints:" + Arrays.toString(msgArr));
 
             if (MessageUtil.validate(msgArr)) {
                 System.out.println("validate done :" + MessageUtil.intsToHexString(msgArr));
@@ -59,27 +63,27 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                         CellStatusMessage cellStatusMessage = (CellStatusMessage) msg;
 
                         if (MessageType.CELL_STATUS.equals(cellStatusMessage.getNextCommand())) {
-                            mqttSender.sendCellStatus((CellStatusMessage)msg);
+                            mqttSender.sendCellStatus((CellStatusMessage) msg);
 
-                        }else {
+                        } else {
                             Message nextMessage = CellStatusMessageParser.parse(cellStatusMessage);
                             if (nextMessage != null) {
                                 channelWrite(clientList.get(nextMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET)), nextMessage);
-                            }else {
+                            } else {
                                 System.out.println("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
                             }
                         }
-                    }else if (msg instanceof HeartBeatMessage) {
-                        mqttSender.sendHeartBeatsMessage((HeartBeatMessage)msg);
+                    } else if (msg instanceof HeartBeatMessage) {
+                        mqttSender.sendHeartBeatsMessage((HeartBeatMessage) msg);
 
-                    }else if (msg instanceof ShipmentMessage) {
-                        mqttSender.sendShipment((ShipmentMessage)msg);
+                    } else if (msg instanceof ShipmentMessage) {
+                        mqttSender.sendShipment((ShipmentMessage) msg);
 
-                    }else if (msg instanceof ShipmentResultMessage) {
-                        mqttSender.sendShipmentResult((ShipmentResultMessage)msg);
+                    } else if (msg instanceof ShipmentResultMessage) {
+                        mqttSender.sendShipmentResult((ShipmentResultMessage) msg);
 
-                    }else if (msg instanceof ShipmentLogMessage) {
-                        mqttSender.sendShipmentLogMessage((ShipmentLogMessage)msg);
+                    } else if (msg instanceof ShipmentLogMessage) {
+                        mqttSender.sendShipmentLogMessage((ShipmentLogMessage) msg);
 
                     }
                 }
