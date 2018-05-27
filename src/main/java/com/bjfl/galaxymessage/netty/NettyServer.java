@@ -107,10 +107,3 @@ public class NettyServer {
     }
 
 }
-
-class A extends DelimiterBasedFrameDecoder{
-
-    public A(int maxFrameLength, ByteBuf delimiter) {
-        super(maxFrameLength, delimiter);
-    }
-}

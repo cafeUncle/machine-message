@@ -3,6 +3,8 @@ package com.bjfl.galaxymessage.messages;
 import com.bjfl.galaxymessage.util.Constants;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Message implements Serializable {
+
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected int[] ints;
 

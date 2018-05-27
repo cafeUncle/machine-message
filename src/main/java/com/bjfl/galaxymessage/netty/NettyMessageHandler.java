@@ -40,7 +40,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             ByteBuf buf = (ByteBuf) o;
             byte[] byteArray = new byte[buf.readableBytes()];
             buf.readBytes(byteArray);
-            logger.info("rec bytes:" + Arrays.toString(byteArray));
+            logger.info(logger.getName() + "rec bytes:" + Arrays.toString(byteArray));
             int[] msgArr = new int[byteArray.length + 1];
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
@@ -49,7 +49,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             logger.info("rec ints:" + Arrays.toString(msgArr));
 
             if (MessageUtil.validate(msgArr)) {
-                System.out.println("validate done :" + MessageUtil.intsToHexString(msgArr));
+                logger.info("validate done :" + MessageUtil.intsToHexString(msgArr));
 
                 Message msg = MessageFactory.parse(msgArr);
 
@@ -70,7 +70,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                             if (nextMessage != null) {
                                 channelWrite(clientList.get(nextMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET)), nextMessage);
                             } else {
-                                System.out.println("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
+                                logger.error("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
                             }
                         }
                     } else if (msg instanceof HeartBeatMessage) {
@@ -88,34 +88,53 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                     }
                 }
             } else {
-                System.out.println("validate error:" + MessageUtil.intsToHexString(msgArr));
+                logger.error("validate error:" + MessageUtil.intsToHexString(msgArr));
             }
         } finally {
             ReferenceCountUtil.release(o);
         }
     }
 
+    /**
+     * 监听到客户端进入
+     * @param ctx
+     * @throws Exception
+     */
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        boolean active = channel.isActive();
-        if (active) {
-            System.out.println("[" + channel.remoteAddress() + "] is online");
+        boolean isOpen = channel.isOpen();
+        if (isOpen) {
+            logger.info("监听到客户端进入：[" + channel.remoteAddress() + "] is open");
         } else {
-            System.out.println("[" + channel.remoteAddress() + "] is offline");
+            logger.info("监听到客户端进入：[" + channel.remoteAddress() + "] is unOpen");
         }
     }
 
+    /**
+     * 监听到客户端退出
+     * @param ctx
+     * @throws Exception
+     */
     @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
-        System.out.println(ctx.channel().remoteAddress() + ":unregister");
-    }
-
-    @Override
-    public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-        super.deregister(ctx, promise);
-        System.out.println(ctx.channel().remoteAddress() + ":deregister");
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+        boolean isOpen = channel.isOpen();
+        if (isOpen) {
+            logger.info("监听到客户端退出：[" + channel.remoteAddress() + "] is open");
+        } else {
+            if (clientList.containsValue(ctx)) {
+                for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
+                    if (ctx.equals(entry.getValue())) {
+                        clientList.remove(entry.getKey());
+                        logger.info("[" + entry.getKey() + "] 退出了");
+                        break;
+                    }
+                }
+            }
+            ctx.close();
+            logger.info("监听到客户端退出：[" + channel.remoteAddress() + "] is unOpen");
+        }
     }
 
     @Override
@@ -129,7 +148,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
                 if (ctx.equals(entry.getValue())) {
                     clientList.remove(entry.getKey());
-                    System.out.println("[" + entry.getKey() + "] exception:" + cause.getMessage());
+                    logger.error("[" + entry.getKey() + "] exception:" + cause.getMessage());
                     cause.printStackTrace();
                     break;
                 }
@@ -142,7 +161,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
         ByteBuf heapBuffer = Unpooled.buffer(msg.getInts().length);
         heapBuffer.writeBytes(MessageUtil.intArrToByteArr(msg.getInts()));
         channelHandlerContext.channel().writeAndFlush(heapBuffer);
-        System.out.println("sendToMachine-" + new String(msg.getInts(), 3, 13) + ":" + MessageUtil.intsToHexString(msg.getInts()));
+        logger.info("sendToMachine-" + new String(msg.getInts(), 3, 13) + ":" + MessageUtil.intsToHexString(msg.getInts()));
     }
 
 }

@@ -52,8 +52,6 @@ public class MqttSender {
     }
 
     public void sendHeartBeatsMessage(HeartBeatMessage heartBeatMessage) {
-        System.out.println("in:" + heartBeatsTopic);
-        System.out.println("out:" + mqttConfiguration.heartBeatsTopic);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("machineNo", heartBeatMessage.getMachineCode(Constants.HEART_BEAT_MACHINE_CODE_OFFSET));
         this.send(jsonObject, heartBeatsTopic);

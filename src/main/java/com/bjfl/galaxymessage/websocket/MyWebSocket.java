@@ -1,5 +1,7 @@
 package com.bjfl.galaxymessage.websocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -20,6 +22,8 @@ public class MyWebSocket {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * 连接建立成功调用的方法
      */
@@ -28,11 +32,11 @@ public class MyWebSocket {
         this.session = session;
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
-        System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
+        logger.info("有新连接加入！当前在线人数为" + getOnlineCount());
         try {
             sendMessage("有新连接加入！当前在线人数为" + getOnlineCount());
         } catch (IOException e) {
-            System.out.println("IO异常");
+            logger.error("IO异常");
         }
     }
 
@@ -43,7 +47,7 @@ public class MyWebSocket {
     public void onClose() {
         webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
-        System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
+        logger.info("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -53,7 +57,7 @@ public class MyWebSocket {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);
+        logger.info("来自客户端的消息:" + message);
 
 ////        群发消息
 //        for (MyWebSocket item : webSocketSet) {
@@ -73,7 +77,7 @@ public class MyWebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        System.out.println("发生错误");
+        logger.error("发生错误");
         error.printStackTrace();
     }
 

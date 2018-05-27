@@ -25,8 +25,12 @@ appender("FILE", RollingFileAppender) {
     }
 }
 
-logger("com.bjfl.galaxymessage.netty", INFO, ["FILE"])
+logger("com.bjfl.galaxymessage.netty", INFO, ["FILE", "STDOUT"], false)
 
-logger("com.bjfl.galaxymessage.mqtt", INFO, ["FILE"])
+logger("com.bjfl.galaxymessage.mqtt", INFO, ["FILE", "STDOUT"], false)
+
+logger("com.bjfl.galaxymessage.util", ERROR, ["FILE", "STDOUT"], false)
+
+logger("com.bjfl.galaxymessage.messages", INFO, ["FILE", "STDOUT"], false)
 
 root(INFO, ["STDOUT"])

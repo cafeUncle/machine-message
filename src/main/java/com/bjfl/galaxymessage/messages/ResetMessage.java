@@ -20,6 +20,6 @@ public class ResetMessage extends Message {
 
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
-        System.out.println("复位系统rec:" + machineCode + ", 回复状态(1货道主板复位成功 2通讯主板复位成功):" + this.ints[20]);
+        logger.info("复位系统rec:" + machineCode + ", 回复状态(1货道主板复位成功 2通讯主板复位成功):" + this.ints[20]);
     }
 }

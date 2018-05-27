@@ -7,6 +7,8 @@ import com.bjfl.galaxymessage.netty.NettyMessageHandler;
 import com.bjfl.galaxymessage.parser.MessageType;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -21,6 +23,8 @@ import java.util.List;
 @Service
 public class MqttReceiver {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     NettyMessageHandler nettyMessageHandler;
 
@@ -34,7 +38,7 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("testInputChannel:" + message.getPayload());
+                logger.info("testInputChannel:" + message.getPayload());
             }
         };
     }
@@ -49,7 +53,7 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("cellStatusInputChannel:" + message.getPayload());
+                logger.info("cellStatusInputChannel:" + message.getPayload());
             }
         };
     }
@@ -64,7 +68,7 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("shipmentInputChannel:" + message.getPayload());
+                logger.info("shipmentInputChannel:" + message.getPayload());
             }
 
         };
@@ -80,7 +84,7 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("shipmentResultInputChannel:" + message.getPayload());
+                logger.info("shipmentResultInputChannel:" + message.getPayload());
             }
         };
     }
@@ -95,7 +99,7 @@ public class MqttReceiver {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println("shipmentLogInputChannel:" + message.getPayload());
+                logger.info("shipmentLogInputChannel:" + message.getPayload());
 
             }
         };
@@ -109,7 +113,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "preposeMotorCaseInputChannel")
     public MessageHandler preposeMotorCaseHandler() {
         return message -> {
-            System.out.println("preposeMotorCaseInputChannel:" + message.getPayload().toString());
+            logger.info("preposeMotorCaseInputChannel:" + message.getPayload().toString());
             try{
                 FourthPreposeMotorCaseRequest fourthPreposeMotorCaseRequest = JSON.parseObject(message.getPayload().toString(), FourthPreposeMotorCaseRequest.class);
                 if (fourthPreposeMotorCaseRequest.notExpired()){
@@ -142,7 +146,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "preposeMotorHomeInputChannel")
     public MessageHandler preposeMotorHomeHandler() {
         return message -> {
-            System.out.println("preposeMotorHomeInputChannel:" + message.getPayload().toString());
+            logger.info("preposeMotorHomeInputChannel:" + message.getPayload().toString());
             try{
                 FourthPreposeMotorHomeRequest homeRequest = JSON.parseObject(message.getPayload().toString(), FourthPreposeMotorHomeRequest.class);
                 if (homeRequest.notExpired()){
@@ -174,7 +178,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "coorDinateCaseGoodInputChannel")
     public MessageHandler coorDinateCaseGoodHandler() {
         return message -> {
-            System.out.println("coorDinateCaseGoodInputChannel:" + message.getPayload().toString());
+            logger.info("coorDinateCaseGoodInputChannel:" + message.getPayload().toString());
             try{
                 FourthCoorDinateCaseGoodRequest coordinateRequest = JSON.parseObject(message.getPayload().toString(), FourthCoorDinateCaseGoodRequest.class);
                 if (coordinateRequest.notExpired()){
@@ -208,7 +212,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "coorDinateHomeInputChannel")
     public MessageHandler coorDinateHomeHandler() {
         return message -> {
-            System.out.println("coorDinateHomeInputChannel:" + message.getPayload());
+            logger.info("coorDinateHomeInputChannel:" + message.getPayload());
             try{
                 FourthCoorDinateHomeRequest homeRequest = JSON.parseObject(message.getPayload().toString(), FourthCoorDinateHomeRequest.class);
                 if (homeRequest.notExpired()){
@@ -239,7 +243,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "goodsSellCaseInputChannel")
     public MessageHandler goodsSellCaseHandler() {
         return message -> {
-            System.out.println("goodsSellCaseInputChannel:" + message.getPayload());
+            logger.info("goodsSellCaseInputChannel:" + message.getPayload());
             try{
                 FourthGoodsSellCaseRequest sellCaseRequest = JSON.parseObject(message.getPayload().toString(), FourthGoodsSellCaseRequest.class);
                 if (sellCaseRequest.notExpired()){
@@ -278,7 +282,7 @@ public class MqttReceiver {
     @ServiceActivator(inputChannel = "goodsResetInputChannel")
     public MessageHandler goodsResetHandler() {
         return message -> {
-            System.out.println("goodsResetInputChannel:" + message.getPayload());
+            logger.info("goodsResetInputChannel:" + message.getPayload());
             try{
                 FourthGoodsResetRequest resetRequest = JSON.parseObject(message.getPayload().toString(), FourthGoodsResetRequest.class);
                 if (resetRequest.notExpired()){

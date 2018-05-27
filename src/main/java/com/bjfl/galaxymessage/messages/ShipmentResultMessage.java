@@ -24,7 +24,7 @@ public class ShipmentResultMessage extends Message {
 
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
-        System.out.println("查询出货结果rec:" + machineCode
+        logger.info("查询出货结果rec:" + machineCode
                 + ", 状态:" + parseStatus(this.ints[this.ints.length - 6])
                 + ", 是否扣钱:" + parsePay(this.ints[this.ints.length - 5])
                 + ", 当前出货处理结果:" + parseResult(this.ints[this.ints.length - 4])

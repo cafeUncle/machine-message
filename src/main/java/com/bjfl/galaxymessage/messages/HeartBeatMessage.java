@@ -21,7 +21,7 @@ public class HeartBeatMessage extends Message {
 
         NettyMessageHandler.clientList.put(machineCode, ctx);
 
-        System.out.println(machineCode);
+        logger.info(machineCode);
 
     }
 }
