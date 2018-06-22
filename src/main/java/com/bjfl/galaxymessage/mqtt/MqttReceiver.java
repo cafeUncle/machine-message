@@ -1,12 +1,16 @@
 package com.bjfl.galaxymessage.mqtt;
 
 import com.alibaba.fastjson.JSON;
+import com.bjfl.galaxymessage.jobs.Job;
+import com.bjfl.galaxymessage.jobs.JobBus;
 import com.bjfl.galaxymessage.messages.*;
 import com.bjfl.galaxymessage.models.request.*;
 import com.bjfl.galaxymessage.netty.NettyMessageHandler;
 import com.bjfl.galaxymessage.parser.MessageType;
+import com.bjfl.galaxymessage.util.Constants;
 import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.tomcat.util.bcel.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +32,12 @@ public class MqttReceiver {
     @Autowired
     NettyMessageHandler nettyMessageHandler;
 
+    @Autowired
+    JobBus jobBus;
+
     /**
      * 测试通信服务mq连接
+     *
      * @return
      */
     @Bean
@@ -45,6 +53,7 @@ public class MqttReceiver {
 
     /**
      * 查询货道状态
+     *
      * @return
      */
     @Bean
@@ -60,6 +69,7 @@ public class MqttReceiver {
 
     /**
      * 整体出货
+     *
      * @return
      */
     @Bean
@@ -76,6 +86,7 @@ public class MqttReceiver {
 
     /**
      * 获取出货结果
+     *
      * @return
      */
     @Bean
@@ -91,6 +102,7 @@ public class MqttReceiver {
 
     /**
      * 获取出货日志
+     *
      * @return
      */
     @Bean
@@ -107,6 +119,7 @@ public class MqttReceiver {
 
     /**
      * 前置货梯测试
+     *
      * @return
      */
     @Bean
@@ -114,25 +127,25 @@ public class MqttReceiver {
     public MessageHandler preposeMotorCaseHandler() {
         return message -> {
             logger.info("preposeMotorCaseInputChannel:" + message.getPayload().toString());
-            try{
+            try {
                 FourthPreposeMotorCaseRequest fourthPreposeMotorCaseRequest = JSON.parseObject(message.getPayload().toString(), FourthPreposeMotorCaseRequest.class);
-                if (fourthPreposeMotorCaseRequest.notExpired()){
+                if (fourthPreposeMotorCaseRequest.notExpired()) {
                     String machineCode = fourthPreposeMotorCaseRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = fourthPreposeMotorCaseRequest.getPosition();
-                        if (position == 0) {position=1;}
-                        if (!sendCellStatus(machineCode, position)) {
-                            return;
+                        if (position == 0) {
+                            position = 1;
+                            fourthPreposeMotorCaseRequest.setPosition(position);
                         }
-
                         int i = fourthPreposeMotorCaseRequest.getzAxis();
                         PreposeMotorCaseMessage preposeMotorCaseMessage = new PreposeMotorCaseMessage();
                         preposeMotorCaseMessage.generate(machineCode, position, MessageType.PREPOSE_MOTOR_CASE.getCode(), Arrays.asList(0x00, 0x01, i >>> 8, i & 0xff));
-                        nettyMessageHandler.channelWrite(ctx, preposeMotorCaseMessage);
+                        jobBus.push(machineCode, new Job(fourthPreposeMotorCaseRequest, Constants.COMMAND_TIMEOUT, preposeMotorCaseMessage));
+                        sendCellStatus(machineCode, position);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -140,6 +153,7 @@ public class MqttReceiver {
 
     /**
      * 前置货梯归位
+     *
      * @return
      */
     @Bean
@@ -147,24 +161,23 @@ public class MqttReceiver {
     public MessageHandler preposeMotorHomeHandler() {
         return message -> {
             logger.info("preposeMotorHomeInputChannel:" + message.getPayload().toString());
-            try{
+            try {
                 FourthPreposeMotorHomeRequest homeRequest = JSON.parseObject(message.getPayload().toString(), FourthPreposeMotorHomeRequest.class);
-                if (homeRequest.notExpired()){
+                if (homeRequest.notExpired()) {
                     String machineCode = homeRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = homeRequest.getPosition();
-                        if (position == 0) {position=1;}
-                        if (!sendCellStatus(machineCode, position)) {
-                            return;
+                        if (position == 0) {
+                            position = 1;
                         }
-
                         PreposeMotorHomeMessage homeMessage = new PreposeMotorHomeMessage();
                         homeMessage.generate(machineCode, position, MessageType.PREPOSE_MOTOR_HOME.getCode(), Arrays.asList(0x00, 0x01));
-                        nettyMessageHandler.channelWrite(ctx, homeMessage);
+                        jobBus.push(machineCode, new Job(homeRequest, Constants.COMMAND_TIMEOUT, homeMessage));
+                        sendCellStatus(machineCode, position);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -172,6 +185,7 @@ public class MqttReceiver {
 
     /**
      * 后置推手测试
+     *
      * @return
      */
     @Bean
@@ -179,14 +193,16 @@ public class MqttReceiver {
     public MessageHandler coorDinateCaseGoodHandler() {
         return message -> {
             logger.info("coorDinateCaseGoodInputChannel:" + message.getPayload().toString());
-            try{
+            try {
                 FourthCoorDinateCaseGoodRequest coordinateRequest = JSON.parseObject(message.getPayload().toString(), FourthCoorDinateCaseGoodRequest.class);
-                if (coordinateRequest.notExpired()){
+                if (coordinateRequest.notExpired()) {
                     String machineCode = coordinateRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = coordinateRequest.getPosition();
-                        if (position == 0) {position=1;}
+                        if (position == 0) {
+                            position = 1;
+                        }
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -198,7 +214,7 @@ public class MqttReceiver {
                         nettyMessageHandler.channelWrite(ctx, caseMessage);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -206,6 +222,7 @@ public class MqttReceiver {
 
     /**
      * 后置推手归位
+     *
      * @return
      */
     @Bean
@@ -213,14 +230,16 @@ public class MqttReceiver {
     public MessageHandler coorDinateHomeHandler() {
         return message -> {
             logger.info("coorDinateHomeInputChannel:" + message.getPayload());
-            try{
+            try {
                 FourthCoorDinateHomeRequest homeRequest = JSON.parseObject(message.getPayload().toString(), FourthCoorDinateHomeRequest.class);
-                if (homeRequest.notExpired()){
+                if (homeRequest.notExpired()) {
                     String machineCode = homeRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = homeRequest.getPosition();
-                        if (position == 0) {position=1;}
+                        if (position == 0) {
+                            position = 1;
+                        }
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -230,7 +249,7 @@ public class MqttReceiver {
                         nettyMessageHandler.channelWrite(ctx, homeMessage);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -244,14 +263,16 @@ public class MqttReceiver {
     public MessageHandler goodsSellCaseHandler() {
         return message -> {
             logger.info("goodsSellCaseInputChannel:" + message.getPayload());
-            try{
+            try {
                 FourthGoodsSellCaseRequest sellCaseRequest = JSON.parseObject(message.getPayload().toString(), FourthGoodsSellCaseRequest.class);
-                if (sellCaseRequest.notExpired()){
+                if (sellCaseRequest.notExpired()) {
                     String machineCode = sellCaseRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = sellCaseRequest.getPosition();
-                        if (position == 0) {position=1;}
+                        if (position == 0) {
+                            position = 1;
+                        }
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -269,7 +290,7 @@ public class MqttReceiver {
                         nettyMessageHandler.channelWrite(ctx, shipmentMessage);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -283,14 +304,16 @@ public class MqttReceiver {
     public MessageHandler goodsResetHandler() {
         return message -> {
             logger.info("goodsResetInputChannel:" + message.getPayload());
-            try{
+            try {
                 FourthGoodsResetRequest resetRequest = JSON.parseObject(message.getPayload().toString(), FourthGoodsResetRequest.class);
-                if (resetRequest.notExpired()){
+                if (resetRequest.notExpired()) {
                     String machineCode = resetRequest.getMachineCode();
                     ChannelHandlerContext ctx = NettyMessageHandler.clientList.get(machineCode);
                     if (ctx != null && ctx.channel().isWritable() && ctx.channel().isActive() && ctx.channel().isOpen()) {
                         int position = resetRequest.getPosition();
-                        if (position == 0) {position=1;}
+                        if (position == 0) {
+                            position = 1;
+                        }
                         if (!sendCellStatus(machineCode, position)) {
                             return;
                         }
@@ -300,7 +323,7 @@ public class MqttReceiver {
                         nettyMessageHandler.channelWrite(ctx, resetMessage);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         };
@@ -319,7 +342,7 @@ public class MqttReceiver {
                 return false;
             }
             return true;
-        }else {
+        } else {
             return false;
         }
     }

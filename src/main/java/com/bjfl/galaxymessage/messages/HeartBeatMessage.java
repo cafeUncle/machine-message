@@ -14,12 +14,10 @@ public class HeartBeatMessage extends Message {
     }
 
     @Override
-    public void deal(ChannelHandlerContext ctx) {
-        super.deal(ctx);
+    public void print(ChannelHandlerContext ctx) {
+        super.print(ctx);
 
         String machineCode = getMachineCode(Constants.HEART_BEAT_MACHINE_CODE_OFFSET);
-
-        NettyMessageHandler.clientList.put(machineCode, ctx);
 
         logger.info(machineCode);
 

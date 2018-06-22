@@ -1,15 +1,14 @@
 package com.bjfl.galaxymessage.parser;
 
-import com.bjfl.galaxymessage.messages.Message;
 import com.bjfl.galaxymessage.messages.*;
 
 public class MessageFactory {
 
-    public static Message parse(int[] msg){
+    public static Message parse(int[] msg) {
         if (msg.length == 20) {
             if (msg[16] == MessageType.REGISTER.getCode()) {
                 return new RegisterMessage(msg);
-            }else if (msg[16] == MessageType.HEART_BEAT.getCode()) {
+            } else if (msg[16] == MessageType.HEART_BEAT.getCode()) {
                 return new HeartBeatMessage(msg);
             }
         }

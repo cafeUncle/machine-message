@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class ShipmentLogMessage extends Message {
 
-    public ShipmentLogMessage(){
+    public ShipmentLogMessage() {
         super();
     }
 
@@ -17,14 +17,14 @@ public class ShipmentLogMessage extends Message {
     }
 
     @Override
-    public void deal(ChannelHandlerContext ctx) {
-        super.deal(ctx);
+    public void print(ChannelHandlerContext ctx) {
+        super.print(ctx);
 
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         logger.info("获取出货日志rec:" + machineCode
                 + ", 日志(1存储芯片通讯异常2读取指令参数错误3日志读取成功4日志读取失败(没有查到当前日志)):" + this.ints[20]
-                + ", 日志内容(状态码)" + IntStream.range(23, this.ints.length -4)
+                + ", 日志内容(状态码)" + IntStream.range(23, this.ints.length - 4)
                 .mapToObj((i) -> String.valueOf(this.ints[i]))
                 .collect(Collectors.joining(",")));
 

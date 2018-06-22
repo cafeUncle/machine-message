@@ -23,47 +23,53 @@ public class MqttSender {
     @Value("${heartBeats.topic}")
     String heartBeatsTopic;
 
-    public void sendCellStatus(CellStatusMessage cellStatusMessage) {
-        MqttTopic clientTopic = mqttClient.getTopic(cellStatusMessage.getTopic());
-        MqttMessage message = new MqttMessage("Hello World. Hello MQTT.".getBytes());
-        message.setQos(Constants.MQTT_QOS);
-        message.setRetained(false);
-        try {
-            clientTopic.publish(message);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+    @Value("${fourthShipmentError.topic}")
+    String fourthShipmentErrorTopic;
+
+    public void sendCellStatus(CellStatusMessage cellStatusMessage, String theme) {
+        JSONObject result = new JSONObject();
+        result.put("machineNo", cellStatusMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET));
+        result.put("position", cellStatusMessage.getPosition());
+        result.put("status", cellStatusMessage.getStatusCode());
+        result.put("shipmentProcess", cellStatusMessage.getShipmentProcessCode());
+        result.put("shipmentStatus", cellStatusMessage.getShipmentStatusCode());
+        result.put("cellStatus", cellStatusMessage.getCellStatusCode());
+        this.send(result, theme);
     }
 
-    public void sendShipment(ShipmentMessage shipmentMessage) {
-//        message.setRetained(false);  重要的保留，不重要的不需要保留
+    public void sendShipment(ShipmentMessage shipmentMessage, String theme) {
+        JSONObject result = new JSONObject();
+        result.put("machineNo", shipmentMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET));
+        result.put("position", shipmentMessage.getPosition());
+        result.put("status", shipmentMessage.getStatusCode()); // 1成功 0失败
+        this.send(result, theme);
     }
 
-    public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage) {
-        // extract message machineCode orderCode
+    public void sendShipmentResult(ShipmentResultMessage shipmentResultMessage, String theme) {
         shipmentResultMessage.getOrderCode();
         shipmentResultMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
-        //
-//        message.setRetained(false);
+        JSONObject result = new JSONObject();
+        result.put("machineNo", shipmentResultMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET));
+        result.put("position", shipmentResultMessage.getPosition());
+        result.put("orderCode", shipmentResultMessage.getOrderCode());
+        result.put("shipmentProcess", shipmentResultMessage.getShipmentProcessCode());
+        result.put("shipmentStatus", shipmentResultMessage.getShipmentStatusCode());
+        result.put("cellStatus", shipmentResultMessage.getCellStatusCode());
+        result.put("status", shipmentResultMessage.getStatusCode());
+        result.put("payStatus", shipmentResultMessage.getPayCode());
+        result.put("isDeal", shipmentResultMessage.getResultCode());
+        this.send(result, theme);
     }
 
-    public void sendShipmentLogMessage(ShipmentLogMessage shipmentLogMessage) {
-
-    }
-
-    public void sendHeartBeatsMessage(HeartBeatMessage heartBeatMessage) {
+    public void sendHeartBeatsMessage(String machineNo) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("machineNo", heartBeatMessage.getMachineCode(Constants.HEART_BEAT_MACHINE_CODE_OFFSET));
+        jsonObject.put("machineNo", machineNo);
         this.send(jsonObject, heartBeatsTopic);
-    }
-
-    public void sendShipmentErrorMessage(HeartBeatMessage heartBeatMessage) {
-
     }
 
     private void send(JSONObject jsonObject, String topic) {
         jsonObject.put("timestamp", System.currentTimeMillis());
-        jsonObject.put("expireTime", 1000);
+        jsonObject.put("expireTime", 10);
         MqttTopic clientTopic = mqttClient.getTopic(topic);
         MqttMessage message = new MqttMessage(jsonObject.toString().getBytes());
         message.setQos(Constants.MQTT_QOS);

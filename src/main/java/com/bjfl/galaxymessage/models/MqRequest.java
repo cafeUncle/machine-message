@@ -61,4 +61,15 @@ public class MqRequest {
         return System.currentTimeMillis() <= this.timestamp + this.expireTime * 1000;
     }
 
+    @Override
+    public String toString() {
+        return "MqRequest{" +
+                "theme='" + theme + '\'' +
+                ", machineNo='" + machineNo + '\'' +
+                ", machineCode='" + machineCode + '\'' +
+                ", position=" + position +
+                ", timestamp=" + timestamp +
+                ", expireTime=" + expireTime +
+                '}';
+    }
 }

@@ -12,4 +12,6 @@ public class Constants {
 
     public static final int MQTT_KEEP_CONNECTION_TIMEOUT = 10;
 
+    public static final int COMMAND_TIMEOUT = 30000;
+
 }

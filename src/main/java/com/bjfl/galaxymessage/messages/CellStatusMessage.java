@@ -16,19 +16,31 @@ public class CellStatusMessage extends Message {
         super(ints);
     }
 
+    public int getShipmentProcessCode() {
+        return this.ints[20]*256 + this.ints[21];
+    }
+
+    public int getShipmentStatusCode() {
+        return this.ints[22]*256 + this.ints[23];
+    }
+
+    public int getCellStatusCode() {
+        return this.ints[24]*256 + this.ints[25];
+    }
+
+    public int getStatusCode(){
+        return ints[26];
+    }
+
     @Override
-    public void deal(ChannelHandlerContext ctx) {
-        super.deal(ctx);
+    public void print(ChannelHandlerContext ctx) {
+        super.print(ctx);
 
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 
         logger.info("查询货道状态rec:" + machineCode +
-                ", 能否出货(0能1不能):" + this.ints[26] +
+                ", 能否出货(0能1不能):" + getStatusCode() +
                 ", 16进制数组:" + Arrays.toString(this.ints));
 
-    }
-
-    public MessageType getNextCommand() {
-        return MessageType.getEnum(this.ints[28] * 256 + this.ints[29]);
     }
 }

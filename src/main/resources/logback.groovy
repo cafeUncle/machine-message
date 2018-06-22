@@ -1,5 +1,7 @@
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+
 import java.nio.charset.Charset
+
 import static ch.qos.logback.classic.Level.INFO
 
 def LOG_HOME = "./logs"
@@ -30,6 +32,8 @@ logger("com.bjfl.galaxymessage.netty", INFO, ["FILE", "STDOUT"], false)
 logger("com.bjfl.galaxymessage.mqtt", INFO, ["FILE", "STDOUT"], false)
 
 logger("com.bjfl.galaxymessage.util", ERROR, ["FILE", "STDOUT"], false)
+
+logger("com.bjfl.galaxymessage.jobs", INFO, ["FILE", "STDOUT"], false)
 
 logger("com.bjfl.galaxymessage.messages", INFO, ["FILE", "STDOUT"], false)
 

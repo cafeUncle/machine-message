@@ -1,8 +1,8 @@
 package com.bjfl.galaxymessage.netty;
 
+import com.bjfl.galaxymessage.jobs.JobBus;
 import com.bjfl.galaxymessage.messages.*;
 import com.bjfl.galaxymessage.mqtt.MqttSender;
-import com.bjfl.galaxymessage.parser.CellStatusMessageParser;
 import com.bjfl.galaxymessage.parser.MessageFactory;
 import com.bjfl.galaxymessage.parser.MessageType;
 import com.bjfl.galaxymessage.util.Constants;
@@ -10,7 +10,10 @@ import com.bjfl.galaxymessage.util.MessageUtil;
 import com.bjfl.galaxymessage.websocket.MyWebSocket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 @ChannelHandler.Sharable
@@ -31,6 +35,8 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
     MqttSender mqttSender;
     @Autowired
     MyWebSocket myWebSocket;
+    @Autowired
+    JobBus jobBus;
 
     public static final Map<String, ChannelHandlerContext> clientList = new ConcurrentHashMap<>();
 
@@ -45,7 +51,7 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
             for (int i = 0; i < byteArray.length; i++) {
                 msgArr[i] = byteArray[i] & 0xff;
             }
-            msgArr[msgArr.length-1] = 0xED;
+            msgArr[msgArr.length - 1] = 0xED;
             logger.info("rec ints:" + Arrays.toString(msgArr));
 
             if (MessageUtil.validate(msgArr)) {
@@ -54,37 +60,22 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
                 Message msg = MessageFactory.parse(msgArr);
 
                 if (msg != null) {
-                    msg.deal(ctx);
+                    msg.print(ctx);
 
-                    MyWebSocket.sendMessageToAll(Arrays.toString(msg.getInts())); // todo: 测试阶段放开
+                    MyWebSocket.sendMessageToAll(Arrays.toString(msg.getInts()));
 
-                    if (msg instanceof CellStatusMessage) {
-
-                        CellStatusMessage cellStatusMessage = (CellStatusMessage) msg;
-
-                        if (MessageType.CELL_STATUS.equals(cellStatusMessage.getNextCommand())) {
-                            mqttSender.sendCellStatus((CellStatusMessage) msg);
-
-                        } else {
-                            Message nextMessage = CellStatusMessageParser.parse(cellStatusMessage);
-                            if (nextMessage != null) {
-                                channelWrite(clientList.get(nextMessage.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET)), nextMessage);
-                            } else {
-                                logger.error("cellStatus next command parse error, " + MessageUtil.intsToHexString(msg.getInts()));
-                            }
+                    if (msg instanceof HeartBeatMessage || msg instanceof RegisterMessage) {
+                        String machineNo = msg.getMachineCode(Constants.HEART_BEAT_MACHINE_CODE_OFFSET);
+                        if (JobBus.jobs.get(machineNo) == null){
+                            JobBus.jobs.put(machineNo, new CopyOnWriteArrayList<>());
                         }
-                    } else if (msg instanceof HeartBeatMessage) {
-                        mqttSender.sendHeartBeatsMessage((HeartBeatMessage) msg);
-
-                    } else if (msg instanceof ShipmentMessage) {
-                        mqttSender.sendShipment((ShipmentMessage) msg);
-
-                    } else if (msg instanceof ShipmentResultMessage) {
-                        mqttSender.sendShipmentResult((ShipmentResultMessage) msg);
-
-                    } else if (msg instanceof ShipmentLogMessage) {
-                        mqttSender.sendShipmentLogMessage((ShipmentLogMessage) msg);
-
+                        clientList.put(machineNo, ctx);
+                    } else if (msg instanceof CellStatusMessage) {
+                        CellStatusMessage cellStatusMessage = (CellStatusMessage) msg;
+                        logger.info("rec cellStatusMessage:" + cellStatusMessage.toString());
+                        jobBus.doNext(cellStatusMessage);
+                    } else {
+                        jobBus.doBack(msg);
                     }
                 }
             } else {
@@ -95,11 +86,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
         }
     }
 
-    /**
-     * 监听到客户端进入
-     * @param ctx
-     * @throws Exception
-     */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
@@ -111,11 +97,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
         }
     }
 
-    /**
-     * 监听到客户端退出
-     * @param ctx
-     * @throws Exception
-     */
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
@@ -139,11 +120,6 @@ public class NettyMessageHandler extends ChannelHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        /**
-         * exceptionCaught() 事件处理方法是当出现 Throwable 对象才会被调用，即当 Netty 由于 IO
-         * 错误或者处理器在处理事件时抛出的异常时。在大部分情况下，捕获的异常应该被记录下来 并且把关联的 channel
-         * 给关闭掉。然而这个方法的处理方式会在遇到不同异常的情况下有不同的实现，比如你可能想在关闭连接之前发送一个错误码的响应消息。
-         */
         if (clientList.containsValue(ctx)) {
             for (Map.Entry<String, ChannelHandlerContext> entry : clientList.entrySet()) {
                 if (ctx.equals(entry.getValue())) {

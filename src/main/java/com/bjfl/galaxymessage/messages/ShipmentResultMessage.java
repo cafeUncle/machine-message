@@ -18,22 +18,44 @@ public class ShipmentResultMessage extends Message {
         return new String(this.ints, 8, 25);
     }
 
+    public int getShipmentProcessCode() {
+        return this.ints[45]*256 + this.ints[46];
+    }
+
+    public int getShipmentStatusCode() {
+        return this.ints[47]*256 + this.ints[48];
+    }
+
+    public int getCellStatusCode() {
+        return this.ints[49]*256 + this.ints[50];
+    }
+
+    public int getStatusCode() {
+        return this.ints[this.ints.length - 6];
+    }
+
+    public int getPayCode() {
+        return this.ints[this.ints.length - 5];
+    }
+
+    public int getResultCode() {
+        return this.ints[this.ints.length - 4];
+    }
+
     @Override
-    public void deal(ChannelHandlerContext ctx) {
-        super.deal(ctx);
+    public void print(ChannelHandlerContext ctx) {
+        super.print(ctx);
 
-        String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
-
-        logger.info("查询出货结果rec:" + machineCode
-                + ", 状态:" + parseStatus(this.ints[this.ints.length - 6])
-                + ", 是否扣钱:" + parsePay(this.ints[this.ints.length - 5])
-                + ", 当前出货处理结果:" + parseResult(this.ints[this.ints.length - 4])
+        logger.info("查询出货结果rec:" + this.getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET)
+                + ", 状态:" + this.parseStatus()
+                + ", 是否扣钱:" + this.parsePay()
+                + ", 当前出货处理结果:" + this.parseResult()
                 + ", 订单号:" + this.getOrderCode()
                 + ", 16进制数组:" + MessageUtil.intsToHexString(this.ints));
     }
 
-    private String parseStatus(int code) {
-        switch (code) {
+    public String parseStatus() {
+        switch (getStatusCode()) {
             case 0:
                 return "货道板串口没有返回数据或出货指令没有执行,长时间没有返回时需要向报错如网络异常";
             case 1:
@@ -51,8 +73,8 @@ public class ShipmentResultMessage extends Message {
         }
     }
 
-    private String parsePay(int code) {
-        switch (code) {
+    public String parsePay() {
+        switch (getPayCode()) {
             case 0:
                 return "不扣钱";
             case 1:
@@ -62,8 +84,8 @@ public class ShipmentResultMessage extends Message {
         }
     }
 
-    private String parseResult(int code) {
-        switch (code) {
+    public String parseResult() {
+        switch (getResultCode()) {
             case 1:
                 return "未处理";
             case 0:

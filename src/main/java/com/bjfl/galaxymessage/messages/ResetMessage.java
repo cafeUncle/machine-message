@@ -1,12 +1,11 @@
 package com.bjfl.galaxymessage.messages;
 
-import com.bjfl.galaxymessage.netty.NettyMessageHandler;
 import com.bjfl.galaxymessage.util.Constants;
 import io.netty.channel.ChannelHandlerContext;
 
 public class ResetMessage extends Message {
 
-    public ResetMessage(){
+    public ResetMessage() {
         super();
     }
 
@@ -15,8 +14,8 @@ public class ResetMessage extends Message {
     }
 
     @Override
-    public void deal(ChannelHandlerContext ctx) {
-        super.deal(ctx);
+    public void print(ChannelHandlerContext ctx) {
+        super.print(ctx);
 
         String machineCode = getMachineCode(Constants.NORMAL_MESSAGE_MACHINE_CODE_OFFSET);
 

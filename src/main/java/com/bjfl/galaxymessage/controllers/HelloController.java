@@ -6,8 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-
 @Controller
 public class HelloController {
 
@@ -21,6 +19,7 @@ public class HelloController {
 
     /**
      * 类似于centos下载的文件服务器
+     *
      * @return
      */
     @RequestMapping("/logs")

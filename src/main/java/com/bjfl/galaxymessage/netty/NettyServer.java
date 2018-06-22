@@ -1,8 +1,6 @@
 package com.bjfl.galaxymessage.netty;
 
-import com.bjfl.galaxymessage.util.MessageUtil;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
-import javax.print.attribute.standard.MediaSize;
 
 /**
  * 丢弃任何进入的数据 启动服务端的DiscardServerHandler

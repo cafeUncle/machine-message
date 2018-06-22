@@ -39,32 +39,33 @@ public class MessageUtil {
 
     public static boolean validate(int[] msgArr) {
 
-        if(msgArr[0] != 0x8E || msgArr[msgArr.length-1] != 0xED) {
-            logger.error("应该为：8e,ed" + ",实际为：" + msgArr[0] + "," + msgArr[msgArr.length-1] + "," + Arrays.toString(msgArr));
+        if (msgArr[0] != 0x8E || msgArr[msgArr.length - 1] != 0xED) {
+            logger.error("应该为：8e,ed" + ",实际为：" + msgArr[0] + "," + msgArr[msgArr.length - 1] + "," + Arrays.toString(msgArr));
             return false;
         }
 
         if (msgArr[1] * 256 + msgArr[2] != msgArr.length) {
-            logger.error("应该为："+ (msgArr[1] * 256 + msgArr[2]) + ",实际为" + msgArr.length + "," + Arrays.toString(msgArr));
+            logger.error("应该为：" + (msgArr[1] * 256 + msgArr[2]) + ",实际为" + msgArr.length + "," + Arrays.toString(msgArr));
             return false;
         }
 
         int sum = 0;
 
-        for (int i = 0; i < msgArr.length-2; i++) {
+        for (int i = 0; i < msgArr.length - 2; i++) {
             sum += msgArr[i];
         }
 
-        if (sum % 256 == msgArr[msgArr.length-2]) {
+        if (sum % 256 == msgArr[msgArr.length - 2]) {
             return true;
-        }else {
-            logger.error("应该为：" + msgArr[msgArr.length-2] + ",实际为：" + sum % 256 + "," + Arrays.toString(msgArr));
+        } else {
+            logger.error("应该为：" + msgArr[msgArr.length - 2] + ",实际为：" + sum % 256 + "," + Arrays.toString(msgArr));
             return false;
         }
     }
 
     /**
      * 字符串转换成为16进制(无需Unicode编码)
+     *
      * @param str
      * @return
      */
@@ -93,10 +94,6 @@ public class MessageUtil {
 
     public static List<Integer> generateEmptyCode(int length) {
         return IntStream.range(0, length).mapToObj(a -> 0x00).collect(Collectors.toList());
-    }
-
-    public static void main(String[] args) {
-        System.out.println(generateEmptyCode(8).toString());
     }
 
 }
